@@ -29,14 +29,17 @@ public class Profile extends AppCompatActivity {
                             case R.id.nav_home :
                                 intent = new Intent(Profile.this, Home.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_search :
                                 intent = new Intent(Profile.this, Search.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_add :
                                 intent = new Intent(Profile.this, Add.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_profile :
                                 break;

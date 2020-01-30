@@ -31,14 +31,17 @@ public class Home extends AppCompatActivity {
                     case R.id.nav_search :
                         intent = new Intent(Home.this, Search.class);
                         startActivity(intent);
+                        overridePendingTransition(0,0);
                         break;
                     case R.id.nav_add :
                         intent = new Intent(Home.this, Add.class);
                         startActivity(intent);
+                        overridePendingTransition(0,0);
                         break;
                     case R.id.nav_profile :
                         intent = new Intent(Home.this, Profile.class);
                         startActivity(intent);
+                        overridePendingTransition(0,0);
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + item.getItemId());

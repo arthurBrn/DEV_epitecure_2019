@@ -29,16 +29,19 @@ public class Search extends AppCompatActivity {
                             case R.id.nav_home :
                                 intent = new Intent(Search.this, Home.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_search :
                                 break;
                             case R.id.nav_add :
                                 intent = new Intent(Search.this, Add.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_profile :
                                 intent = new Intent(Search.this, Profile.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + item.getItemId());

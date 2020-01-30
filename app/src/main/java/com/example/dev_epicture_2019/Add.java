@@ -29,16 +29,19 @@ public class Add extends AppCompatActivity {
                             case R.id.nav_home :
                                 intent = new Intent(Add.this, Home.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_search :
                                 intent = new Intent(Add.this, Search.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             case R.id.nav_add :
                                 break;
                             case R.id.nav_profile :
                                 intent = new Intent(Add.this, Profile.class);
                                 startActivity(intent);
+                                overridePendingTransition(0,0);
                                 break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + item.getItemId());
