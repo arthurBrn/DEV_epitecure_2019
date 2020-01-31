@@ -19,4 +19,11 @@
         app:menu="@menu/navigation_bottom_bar"
         android:layout_alignParentBottom="true"/>
 
+    <TextView
+        android:id="@+id/userNameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:text="not retrieved" />
+
 </RelativeLayout>
