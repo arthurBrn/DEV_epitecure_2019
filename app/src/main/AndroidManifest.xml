@@ -12,6 +12,7 @@
         <activity android:name=".Profile"/>
         <activity android:name=".Add" />
         <activity android:name=".Search"/>
+        <activity android:name=".Common"/>
         <activity android:name=".Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
