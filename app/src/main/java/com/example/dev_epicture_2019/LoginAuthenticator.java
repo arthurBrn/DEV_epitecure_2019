@@ -32,7 +32,6 @@ public class LoginAuthenticator extends AppCompatActivity {
 
         // Configure sign in to request the user basic ingformation.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-
         // Build google sign in client
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
@@ -47,7 +46,6 @@ public class LoginAuthenticator extends AppCompatActivity {
     }
 
     /**
-     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -73,6 +71,8 @@ public class LoginAuthenticator extends AppCompatActivity {
     {
         try {
             GoogleSignInAccount account = taskCompleted.getResult(ApiException.class);
+            Intent redirectHome = new Intent(getApplicationContext(), Home.class);
+            startActivity(redirectHome);
         } catch(ApiException e)
         {
             Toast.makeText(getApplicationContext(), "Failed login", Toast.LENGTH_LONG).show();
