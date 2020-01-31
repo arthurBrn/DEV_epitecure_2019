@@ -11,17 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        android:name=
         <activity android:name=".LoginAuthenticator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".Profile" />
         <activity android:name=".Add" />
         <activity android:name=".Search" />
-        <activity android:name=".Home"></activity>
+        <activity android:name=".Home">
+        </activity>
     </application>
 
 </manifest>

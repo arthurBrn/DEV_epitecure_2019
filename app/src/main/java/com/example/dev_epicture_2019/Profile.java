@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.widget.Toast;
 import android.service.autofill.TextValueSanitizer;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,5 +48,12 @@ public class Profile extends Common {
         else {
             userName.setText("couldn't recover data");
         }
+    }
+
+    public boolean onTouchEvent(MotionEvent touchEvent) {
+        swipe(touchEvent);
+        if (x1 < x2)
+            create_intent(getApplicationContext(), Add.class);
+        return false;
     }
 }

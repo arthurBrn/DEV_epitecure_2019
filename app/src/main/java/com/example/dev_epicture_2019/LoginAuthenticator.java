@@ -44,7 +44,6 @@ public class LoginAuthenticator extends AppCompatActivity {
     }
 
     /**
-     *
      * @param requestCode
      * @param resultCode
      * @param data
