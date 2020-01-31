@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
-<TextView
+<!-- <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Home"
     android:layout_centerInParent="true"/>
+    -->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_of_photos"
+        android:layout_width="match_parent"
+        android:layout_height="674dp">
+
+    </android.support.v7.widget.RecyclerView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
@@ -19,6 +27,7 @@
         app:menu="@menu/navigation_bottom_bar"
         android:layout_alignParentBottom="true"/>
 
+    <!--
     <Button
         android:id="@+id/launchLogin"
         android:layout_width="wrap_content"
@@ -30,5 +39,8 @@
         android:layout_marginEnd="196dp"
         android:layout_marginBottom="308dp"
         android:text="Button" />
+    -->
+
+
 
 </RelativeLayout>
