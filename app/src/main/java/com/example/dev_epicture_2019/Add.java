@@ -10,44 +10,14 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class Add extends AppCompatActivity {
+public class Add extends Common {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
-        Menu menu = navigationBar.getMenu();
-        MenuItem menuItem = menu.getItem(2);
-        menuItem.setChecked(true);
-        navigationBar.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        Intent intent = null;
-                        switch (item.getItemId()) {
-                            case R.id.nav_home :
-                                intent = new Intent(Add.this, Home.class);
-                                startActivity(intent);
-                                overridePendingTransition(0,0);
-                                break;
-                            case R.id.nav_search :
-                                intent = new Intent(Add.this, Search.class);
-                                startActivity(intent);
-                                overridePendingTransition(0,0);
-                                break;
-                            case R.id.nav_add :
-                                break;
-                            case R.id.nav_profile :
-                                intent = new Intent(Add.this, Profile.class);
-                                startActivity(intent);
-                                overridePendingTransition(0,0);
-                                break;
-                            default:
-                                throw new IllegalStateException("Unexpected value: " + item.getItemId());
-                        }
-                        return false;
-                    }
-                });
+        Common.change_activity(navigationBar, 2, getApplicationContext());
+        overridePendingTransition(0,0);
     }
 }
