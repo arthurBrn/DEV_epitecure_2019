@@ -25,8 +25,6 @@ public class LoginAuthenticator extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_authenticator);
-        Intent intent = new Intent(this, Home.class);
-        startActivity(intent);
 
         signInButton = findViewById(R.id.signInButton);
 
