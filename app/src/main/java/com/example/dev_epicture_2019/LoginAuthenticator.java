@@ -3,8 +3,11 @@ package com.example.dev_epicture_2019;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -15,77 +18,54 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import java.net.URI;
+
 public class LoginAuthenticator extends AppCompatActivity {
 
-    int RC_SIGN_IN = 0;
-    SignInButton signInButton;
-    GoogleSignInClient mGoogleSignInClient;
+    public final String clientId= "7fb2f979f6fbb0b";
+    public final String clientSecret= "34bc17179c221f5d640de7615bc8ffcc7f6bb2dc";
+    public final String callBack= "epicture://imgur";
+
+
+    TextView str;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_authenticator);
 
-        signInButton = findViewById(R.id.signInButton);
 
-        // Configure sign in to request the user basic ingformation.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        // Build google sign in client
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        String url = "https://api.imgur.com/oauth2/authorize";
+        String finalUrl = url + "?client_id=" + clientId + "&response_type=" + "token";
+        Intent conn = new Intent(Intent.ACTION_VIEW);
+        conn.setData(Uri.parse(finalUrl));
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        Button btn = findViewById(R.id.con_btn);
+
+        str = findViewById(R.id.loginAvant);
+
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Will triger the sign in process
-                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_SIGN_IN);
+                startActivity(conn);
             }
         });
+
+
     }
 
-    /**
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onResume() {
+        super.onResume();
 
-        // requestcde is the code sent back by google after the login attempt
-        if (requestCode == RC_SIGN_IN)
-        {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+        // The following line will return "appSchema://appName.com".
+        Uri uri = getIntent().getData();
+        if (uri != null && uri.toString().startsWith("epicture")){
+            String access_token = uri.getQueryParameter("access_token");
+            str.setText(access_token);
         }
-    }
-
-    /**
-     * We handle the case where the login is unsuccessfull
-     * @param taskCompleted
-     */
-    private void handleSignInResult(Task<GoogleSignInAccount> taskCompleted)
-    {
-        try {
-            GoogleSignInAccount account = taskCompleted.getResult(ApiException.class);
-            Intent redirectHome = new Intent(getApplicationContext(), Home.class);
-            startActivity(redirectHome);
-        } catch(ApiException e)
-        {
-            Toast.makeText(getApplicationContext(), "Failed login", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * We handle the case where a user is already logged in.
-     */
-    @Override
-    protected void onStart()
-    {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if (account != null)
-            startActivity(new Intent(getApplicationContext(), Profile.class));
-        super.onStart();
+        //str.setText("BOUYA");
+        //Intent in = new Intent(getApplicationContext(), Home.class);
+        //startActivity(in);
     }
 }
