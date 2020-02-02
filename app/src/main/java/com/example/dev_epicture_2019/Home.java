@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,6 +24,10 @@ public class Home extends Common{
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.change_activity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0,0);
+
+        Uri uri = getIntent().getData();
+        TextView someText = findViewById(R.id.accessTokenId);
+        someText.setText(recoverAccessTokenFromUrl(String.valueOf(uri)));
     }
 
     public boolean onTouchEvent(MotionEvent touchEvent) {

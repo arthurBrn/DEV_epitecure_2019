@@ -2,9 +2,12 @@ package com.example.dev_epicture_2019;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +15,41 @@ import androidx.core.view.GestureDetectorCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class Common extends AppCompatActivity {
+public class  Common extends AppCompatActivity {
 
+    private String callBackUrl;
     static protected float x1;
     static protected float x2;
+
+
+    public String getCallBackUrl()
+    {
+        return (callBackUrl);
+    }
+
+    public void setCallBackUrl(String newCallBackUrl)
+    {
+        callBackUrl = newCallBackUrl;
+    }
+
+    public String recoverData()
+    {
+        String accessToken = "";
+
+        Uri uri = getIntent().getData();
+        accessToken = recoverAccessTokenFromUrl(String.valueOf(uri));
+        return (accessToken);
+    }
+
+    public String recoverAccessTokenFromUrl(String currentCallBackUrl)
+    {
+        String accessToken = "";
+
+        if (!(currentCallBackUrl.isEmpty()))
+            accessToken = currentCallBackUrl.substring((currentCallBackUrl.indexOf('=') + 1), currentCallBackUrl.indexOf('&'));
+        return (accessToken);
+    }
+
     static private void select_current_activity(BottomNavigationView navigationBar, int index) {
         Menu menu = navigationBar.getMenu();
         MenuItem menuItem = menu.getItem(index);

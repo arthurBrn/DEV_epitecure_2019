@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class recoverData extends AppCompatActivity {
@@ -15,24 +17,18 @@ public class recoverData extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recover_data);
 
+        // We recover the data sent back in the URL
         Uri uri = getIntent().getData();
         TextView str = findViewById(R.id.dataId);
         TextView accessToken = findViewById(R.id.accessToken);
         str.setText(String.valueOf(uri));
-        accessToken.setText(String.valueOf(uri.getQueryParameters("access_token")));
 
+        // We cut the the string
+        accessToken.setText(cutUrl(String.valueOf(uri)));
+    }
 
-        Uri newUri = Uri.parse(String.valueOf(uri));
-
-
-        String protocol = newUri.getScheme();
-        String server = newUri.getAuthority();
-
-
-        Set<String> args = newUri.getQueryParameterNames();
-        String limit = newUri.getQueryParameter("refresh_token");
-
-
-        accessToken.setText("");
+    public String cutUrl(String url)
+    {
+        return (url.substring((url.indexOf('=') + 1), url.indexOf('&')));
     }
 }
