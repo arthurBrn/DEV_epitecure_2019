@@ -1,6 +1,7 @@
 package com.example.dev_epicture_2019;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -13,6 +14,10 @@ public class Home extends Common{
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.change_activity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0,0);
+        Bundle extras = getIntent().getExtras();
+        String acces_token = extras.getString("access_token");
+        TextView txt = findViewById(R.id.txt_home);
+        txt.setText(acces_token);
     }
 
     /*public boolean onTouchEvent(MotionEvent touchEvent) {
