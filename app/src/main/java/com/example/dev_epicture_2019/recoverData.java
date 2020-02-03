@@ -12,6 +12,8 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class recoverData extends AppCompatActivity {
 
@@ -19,16 +21,17 @@ public class recoverData extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recover_data);
-
         String url = getIntent().getData().toString();
         TextView str = findViewById(R.id.dataId);
-        TextView accessToken = findViewById(R.id.accessToken);
-        str.setText(url);
-
+        String reg = "^[a-z0-9]+$";
         String access = url.substring(url.indexOf('=') + 1, url.indexOf('&'));
-        str.setText(access);
 
-        Intent intent = new Intent(this, Home.class);
-        startActivity(intent);
+        if (Pattern.matches(reg, access)) {
+            Common.create_intent(this, Home.class);
+            finish();
+        } else {
+            Common.create_intent(this, LoginAuthenticator.class);
+            finish();
+        }
     }
 }
