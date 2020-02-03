@@ -16,8 +16,7 @@ public class Home extends Common{
         overridePendingTransition(0,0);
         Bundle extras = getIntent().getExtras();
         String acces_token = extras.getString("access_token");
-        TextView txt = findViewById(R.id.txt_home);
-        txt.setText(acces_token);
+        super.acces_token = acces_token;
     }
 
     /*public boolean onTouchEvent(MotionEvent touchEvent) {
