@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.net.URI;
 
-public class LoginAuthenticator extends AppCompatActivity {
+public class    LoginAuthenticator extends AppCompatActivity {
 
     public final String clientId= "7fb2f979f6fbb0b";
     public final String clientSecret= "34bc17179c221f5d640de7615bc8ffcc7f6bb2dc";

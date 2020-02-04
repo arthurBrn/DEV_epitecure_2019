@@ -4,4 +4,9 @@
     <string name="nav_search">Search</string>
     <string name="nav_add">Add</string>
     <string name="nav_profile">Profile</string>
+    <string name="link1">https://i.imgur.com/jBZeio3.jpg</string>
+    <string name="link2">https://i.imgur.com/dytJ00U.jpg</string>
+    <string name="link3">https://i.imgur.com/dLI6MGF.png</string>
+    <string name="link4">https://i.imgur.com/VCKTWCB.jpg</string>
+    <string name="link5">https://i.imgur.com/rVdiMur.png</string>
 </resources>

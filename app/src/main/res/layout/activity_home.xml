@@ -6,19 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigationBar"
+        android:scrollbars="vertical"
+        />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:menu="@menu/navigation_bottom_bar"
         android:layout_alignParentBottom="true"/>
-
-    <TextView
-        android:id="@+id/txt_home"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="HOME"
-        android:layout_centerInParent="true"/>
-
-
 </RelativeLayout>
