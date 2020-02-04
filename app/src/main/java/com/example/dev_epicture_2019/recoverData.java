@@ -26,9 +26,8 @@ public class recoverData extends AppCompatActivity {
         String access_token = url.substring(url.indexOf('=') + 1, url.indexOf('&'));
 
         if (access_token != null) {
-            Intent intent = new Intent(this, Home.class);
-            intent.putExtra("access_token", access_token);
-            startActivity(intent);
+            Common.set_acces_token(access_token);
+            Common.create_intent(this, Home.class);
         } else {
             Common.create_intent(this, LoginAuthenticator.class);
             finish();
