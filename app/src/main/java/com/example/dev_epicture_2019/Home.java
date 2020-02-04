@@ -1,7 +1,6 @@
 package com.example.dev_epicture_2019;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,14 +21,14 @@ public class Home extends Common{
         setContentView(R.layout.activity_home);
         TextView txt = findViewById(R.id.txt_home);
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
-        Common.change_activity(navigationBar, 0, getApplicationContext());
-        overridePendingTransition(0, 0);
-        /*OkHttpClient client = new OkHttpClient().newBuilder()
+        Common.changeActivity(navigationBar, 0, getApplicationContext());
+        overridePendingTransition(0,0);
+        OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
                 .url("https://api.imgur.com/3/account/me")
                 .method("GET", null)
-                .addHeader("Authorization", get_acces_token())
+                .addHeader("Authorization", getAccesToken())
                 .build();
 
         Call call = client.newCall(request);
@@ -41,17 +40,16 @@ public class Home extends Common{
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-               String responseBody= response.body().toString();
+
             }
         });
 
     }
-*/
+
     /*public boolean onTouchEvent(MotionEvent touchEvent) {
         swipe(touchEvent);
         if (x1 > x2)
-            create_intent(getApplicationContext(), Search.class);
+            createIntent(getApplicationContext(), Search.class);
         return false;
     }*/
-    }
 }
