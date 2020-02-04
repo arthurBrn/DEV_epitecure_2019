@@ -16,7 +16,7 @@ public class Common extends AppCompatActivity {
 
     static protected float x1;
     static protected float x2;
-    protected String acces_token;
+    static protected String acces_token;
     static private void select_current_activity(BottomNavigationView navigationBar, int index) {
         Menu menu = navigationBar.getMenu();
         MenuItem menuItem = menu.getItem(index);
@@ -59,5 +59,13 @@ public class Common extends AppCompatActivity {
                 x2 = touchEvent.getX();
                 break;
         }
+    }
+
+    static public void set_acces_token (String macces_token) {
+        acces_token = macces_token;
+    }
+
+    static public String get_acces_token () {
+        return acces_token;
     }
 }
