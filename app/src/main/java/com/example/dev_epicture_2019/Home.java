@@ -1,19 +1,28 @@
 package com.example.dev_epicture_2019;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Home extends Common{
 
     private HashMap<String, String> mItems;
+    private TextView _response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +31,7 @@ public class Home extends Common{
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
-        //Picasso.get().load("https://i.imgur.com/jBZeio3.jpg").into(image);
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        /*RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -36,55 +44,14 @@ public class Home extends Common{
         mItems.put("tweet", "https://i.imgur.com/rVdiMur.png");
         Adapter mAdapter = new Adapter(mItems);
 
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);*/
+        _response = findViewById(R.id.response);
+            String url = "https://api.imgur.com/3/account/me";
+        RequestApi myRequest = new RequestApi(url, getAccesToken());
+        myRequest.askApi();
+        String msg = getApiResponse();
+        Log.d("ldswhfwuoooiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "lol " + msg);
+
+        _response.setText(super.getApiResponse());
         }
-        /*OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/account/me")
-                .method("GET", null)
-                .addHeader("Authorization", getAccesToken())
-                .build();
-
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-
-            }
-        });
-    }*/
-
-    /*public boolean onTouchEvent(MotionEvent touchEvent) {
-        swipe(touchEvent);
-        if (x1 > x2)
-            createIntent(getApplicationContext(), Search.class);
-        return false;
-    }*/
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        /*int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }*/
-
-        return super.onOptionsItemSelected(item);
-    }
 }

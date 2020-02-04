@@ -2,6 +2,7 @@ package com.example.dev_epicture_2019;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -15,6 +16,8 @@ public class Common extends AppCompatActivity {
     static protected float x1;
     static protected float x2;
     static protected String accesToken;
+    static protected String ApiResponse;
+
     static private void select_current_activity(BottomNavigationView navigationBar, int index) {
         Menu menu = navigationBar.getMenu();
         MenuItem menuItem = menu.getItem(index);
@@ -66,4 +69,8 @@ public class Common extends AppCompatActivity {
     static public String getAccesToken() {
         return accesToken;
     }
+
+    static public String getApiResponse() { return ApiResponse; }
+
+    static public void setApiResponse(String myResponse) { ApiResponse = myResponse; }
 }
