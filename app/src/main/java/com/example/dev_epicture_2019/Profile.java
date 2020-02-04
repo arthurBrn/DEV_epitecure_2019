@@ -30,12 +30,7 @@ public class Profile extends Common {
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.change_activity(navigationBar, 3, getApplicationContext());
         overridePendingTransition(0, 0);
+
+
     }
-    /*
-    public boolean onTouchEvent(MotionEvent touchEvent) {
-        swipe(touchEvent);
-        if (x1 < x2)
-            create_intent(getApplicationContext(), Add.class);
-        return false;
-    }*/
 }
