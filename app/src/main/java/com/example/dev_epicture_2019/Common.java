@@ -16,7 +16,6 @@ public class Common extends AppCompatActivity {
     static protected float x1;
     static protected float x2;
     static protected String accesToken;
-    static protected String ApiResponse;
 
     static private void select_current_activity(BottomNavigationView navigationBar, int index) {
         Menu menu = navigationBar.getMenu();
@@ -70,7 +69,4 @@ public class Common extends AppCompatActivity {
         return accesToken;
     }
 
-    static public String getApiResponse() { return ApiResponse; }
-
-    static public void setApiResponse(String myResponse) { ApiResponse = myResponse; }
 }

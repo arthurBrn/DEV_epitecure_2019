@@ -23,6 +23,7 @@ public class Home extends Common{
 
     private HashMap<String, String> mItems;
     private TextView _response;
+    private String req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +47,40 @@ public class Home extends Common{
 
         mRecyclerView.setAdapter(mAdapter);*/
         _response = findViewById(R.id.response);
-            String url = "https://api.imgur.com/3/account/me";
+        String url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
+            /*
         RequestApi myRequest = new RequestApi(url, getAccesToken());
-        myRequest.askApi();
-        String msg = getApiResponse();
-        Log.d("ldswhfwuoooiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "lol " + msg);
+        myRequest.askApi();*/
 
-        _response.setText(super.getApiResponse());
+        //String msg = myRequest.getResponse();
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .method("GET", null)
+                .header("Authorization", "Bearer "+ accesToken)
+                .header("User-agent", "DEV_epicture_2019")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String rep = response.body().string();
+                    Home.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            _response.setText(rep);
+                        }
+                    });
+                }
+            }
+        });
         }
+
+
 }
