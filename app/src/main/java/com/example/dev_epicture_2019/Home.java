@@ -113,7 +113,6 @@ public class Home extends Common{
                     JSONObject data = new JSONObject((response.body().string()));
                     JSONArray items = data.getJSONArray("data");
                     String str = items.toString();
-                    Log.d(":jlkqsdngfg:kjqsdnfluqsdbdfluiqsdhfbmlqsinfpùqsndglmiqshnfdomqsdnhfbsq:fbuqpsoidulbfqsdjkugflb", "onResponse: " + str);
                     final List<Photo> photos = new ArrayList<>();
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
