@@ -24,8 +24,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
 
         public Holder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-            textView = itemView.findViewById(R.id.textView);
+            imageView = itemView.findViewById(R.id.img_art);
+            textView = itemView.findViewById(R.id.title_art);
         }
     }
 
