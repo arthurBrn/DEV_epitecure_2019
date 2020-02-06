@@ -45,8 +45,8 @@ public class Home extends Common{
             @Override
             public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.row, null));
-                vh.photo = vh.itemView.findViewById(R.id.img_art);
-                vh.title = vh.itemView.findViewById(R.id.title_art);
+                vh.photo = vh.itemView.findViewById(R.id.image);
+                vh.title = vh.itemView.findViewById(R.id.title);
                 return vh;
             }
 
@@ -113,7 +113,6 @@ public class Home extends Common{
                     JSONObject data = new JSONObject((response.body().string()));
                     JSONArray items = data.getJSONArray("data");
                     String str = items.toString();
-                    Log.d(":jlkqsdngfg:kjqsdnfluqsdbdfluiqsdhfbmlqsinfpùqsndglmiqshnfdomqsdnhfbsq:fbuqpsoidulbfqsdjkugflb", "onResponse: " + str);
                     final List<Photo> photos = new ArrayList<>();
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
