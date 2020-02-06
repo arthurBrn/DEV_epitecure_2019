@@ -32,10 +32,64 @@ import okhttp3.Response;
 
 public class Home extends Common{
 
-    private HashMap<String, String> mItems;
-    private TextView _response;
-    private String req;
     private OkHttpClient httpClient;
+
+    private static class PhotoVH extends RecyclerView.ViewHolder {
+        ImageView photo;
+        TextView title;
+
+        public PhotoVH(View itemView) {
+            super(itemView);
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
+        Common.changeActivity(navigationBar, 0, getApplicationContext());
+        overridePendingTransition(0, 0);
+        this.fetchdata();
+
+    }
+
+    private void fetchdata() {
+        String url = "https://api.imgur.com/3/account/me/favorites";
+        httpClient = new OkHttpClient.Builder().build();
+        Request request = new Request.Builder()
+                .url(url)
+                .method("GET", null)
+                .header("Authorization", "Bearer " + accesToken)
+                .header("User-agent", "DEV_epicture_2019")
+                .build();
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject data = new JSONObject((response.body().string()));
+                    JSONArray items = data.getJSONArray("data");
+                    final List<Photo> photos = new ArrayList<>();
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        Photo photo = new Photo();
+                        photo.id = item.getString("id");
+                        photo.title = item.getString("title");
+                        photo.link = item.getString("cover");
+                        photos.add(photo);
+                    }
+                    runOnUiThread(() -> render(photos));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void render(final List<Photo> photos) {
         RecyclerView rv = findViewById(R.id.recyclerView);
@@ -67,65 +121,6 @@ public class Home extends Common{
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 outRect.bottom = 16; // Gap of 16px
-            }
-        });
-    }
-
-    private static class PhotoVH extends RecyclerView.ViewHolder {
-        ImageView photo;
-        TextView title;
-
-        public PhotoVH(View itemView) {
-            super(itemView);
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
-        Common.changeActivity(navigationBar, 0, getApplicationContext());
-        overridePendingTransition(0, 0);
-
-        fetchdata();
-
-    }
-
-    private void fetchdata() {
-        String url = "https://api.imgur.com/3/account/me/favorites";
-        httpClient = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder()
-                .url(url)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + accesToken)
-                .header("User-agent", "DEV_epicture_2019")
-                .build();
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    JSONObject data = new JSONObject((response.body().string()));
-                    JSONArray items = data.getJSONArray("data");
-                    String str = items.toString();
-                    final List<Photo> photos = new ArrayList<>();
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        Photo photo = new Photo();
-                        photo.id = item.getString("id");
-                        photo.title = item.getString("title");
-                        photo.link = item.getString("cover");
-                        photos.add(photo);
-                    }
-                    runOnUiThread(() -> render(photos));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         });
     }

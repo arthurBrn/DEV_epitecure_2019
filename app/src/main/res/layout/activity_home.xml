@@ -6,13 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/navigationBar"
-        android:scrollbars="vertical"
-        />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:padding="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Favorites"
+            android:textSize="30dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All"
+            android:textSize="30dp"
+            android:gravity="right"/>
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+     android:id="@+id/recyclerView"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content" android:layout_below="@+id/container"
+     android:layout_above="@+id/navigationBar"
+     android:scrollbars="vertical"
+     />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
@@ -20,4 +42,6 @@
         android:layout_height="wrap_content"
         app:menu="@menu/navigation_bottom_bar"
         android:layout_alignParentBottom="true"/>
+
+
 </RelativeLayout>
