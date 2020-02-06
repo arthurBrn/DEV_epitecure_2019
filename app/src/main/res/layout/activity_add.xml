@@ -14,14 +14,13 @@
         android:layout_marginTop="20dp"
         android:text="Upload to imgur "/>
 
-
-    <!-- android:src="" -->
-    <!-- android:background="" -->
     <ImageView
         android:id="@+id/IdProf"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginTop="10dp"
+        android:background="@drawable/com_facebook_button_background"
+        android:src="@drawable/com_facebook_button_background"
         />
 
 

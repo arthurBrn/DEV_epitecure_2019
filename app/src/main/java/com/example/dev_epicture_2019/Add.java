@@ -14,6 +14,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -25,7 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Add extends Common{
+public class Add extends Common {
 
     public String keyUserDocOne = "Doc1";
     ImageView IDProf;
@@ -40,8 +41,8 @@ public class Add extends Common{
         Common.changeActivity(navigationBar, 2, getApplicationContext());
         overridePendingTransition(0, 0);
 
-        IDProf = (ImageView)findViewById(R.id.IdProf);
-        btnUpload = (Button)findViewById(R.id.uploadBtn);
+        IDProf = (ImageView) findViewById(R.id.IdProf);
+        btnUpload = (Button) findViewById(R.id.uploadBtn);
 
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,14 +52,13 @@ public class Add extends Common{
         });
     }
 
+    /**
+     * Allow user to access his files and chose one.
+     */
     public void selectUserImage() {
-        // Create char sequences of possibilities that can't be modified
         final CharSequence[] options = {"Take a picture", "Take picture from gallery", "Cancel"};
-        // Create alerte pannel
         AlertDialog.Builder builderAlert = new AlertDialog.Builder(Add.this);
-        // Set alert title
         builderAlert.setTitle("Add a picture");
-        // Place a listener on each char sequence created
         builderAlert.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -73,7 +73,6 @@ public class Add extends Common{
                     startActivityForResult(intent, 2);
                 }
                 if (options[which].equals("Cancel")) {
-                    // Cancel the alert box
                     dialog.dismiss();
                 }
             }
@@ -81,53 +80,27 @@ public class Add extends Common{
         builderAlert.show();
     }
 
-    // Used in OnActivityResult
-    public Bitmap getResizedBitmap(Bitmap mPicture, int maxPictureSize)
-    {
-        int w = mPicture.getWidth();
-        int h = mPicture.getHeight();
 
-        float bitmapRatio = (float)w / (float)h;
-        if (bitmapRatio > 1)
-        {
-            w = maxPictureSize;
-            h = (int) (w / bitmapRatio);
-        } else {
-            h = maxPictureSize;
-            w = (int) (h * bitmapRatio);
-        }
-        return Bitmap.createScaledBitmap(mPicture, w, h, true);
-    }
-
-    public String BitMapToString(Bitmap userImage)
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        userImage.compress(Bitmap.CompressFormat.PNG, 60, baos);
-        byte[] b = baos.toByteArray();
-        doc1 = Base64.encodeToString(b, Base64.DEFAULT);
-
-        return (doc1);
-    }
-
-    public void OnActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    /**
+     * 
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK)
-        {
-            if (requestCode == 1)
-            {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
                 File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles())
-                {
-                    if (temp.getName().equals("temp.jpg"))
-                    {
+                for (File temp : f.listFiles()) {
+                    if (temp.getName().equals("temp.jpg")) {
                         f = temp;
                         break;
                     }
                 }
-                try
-                {
+                try {
                     Bitmap bitmap;
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), bitmapOptions);
@@ -136,23 +109,22 @@ public class Add extends Common{
                     // Compress it and change its format
                     BitMapToString(bitmap);
                     String path = android.os.Environment
-                                    .getExternalStorageDirectory()
-                                    + File.separator
-                                    + "Phoenix" + File.separator + "default";
+                            .getExternalStorageDirectory()
+                            + File.separator
+                            + "Phoenix" + File.separator + "default";
                     f.delete();
                     OutputStream outFile = null;
                     File fi = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
-                    try
-                    {
+                    try {
                         outFile = new FileOutputStream(fi);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
                         outFile.flush();
                         outFile.close();
-                    } catch(FileNotFoundException e){
+                    } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                    } catch(IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } catch (Exception e) {
@@ -161,7 +133,7 @@ public class Add extends Common{
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
-                Cursor c = getContentResolver().query(selectedImage, filePath, null,null, null);
+                Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
@@ -173,175 +145,235 @@ public class Add extends Common{
             }
         }
     }
-}
 
-/*
 
-        private void SendDetail() {
-            final ProgressDialog loading = new ProgressDialog(Uplode_Reg_Photo.this);
-            loading.setMessage("Please Wait...");
-            loading.show();
-            loading.setCanceledOnTouchOutside(false);
-            RetryPolicy mRetryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, ConfiURL.Registration_URL,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
+
+    // Used in OnActivityResult
+    public Bitmap getResizedBitmap(Bitmap mPicture, int maxPictureSize) {
+        int w = mPicture.getWidth();
+        int h = mPicture.getHeight();
+
+        float bitmapRatio = (float) w / (float) h;
+        if (bitmapRatio > 1) {
+            w = maxPictureSize;
+            h = (int) (w / bitmapRatio);
+        } else {
+            h = maxPictureSize;
+            w = (int) (h * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(mPicture, w, h, true);
+    }
+
+    public String BitMapToString(Bitmap userImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        userImage.compress(Bitmap.CompressFormat.PNG, 60, baos);
+        byte[] b = baos.toByteArray();
+        doc1 = Base64.encodeToString(b, Base64.DEFAULT);
+
+        return (doc1);
+    }
+
+    /*
+
+            private void SendDetail() {
+                final ProgressDialog loading = new ProgressDialog(Uplode_Reg_Photo.this);
+                loading.setMessage("Please Wait...");
+                loading.show();
+                loading.setCanceledOnTouchOutside(false);
+                RetryPolicy mRetryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, ConfiURL.Registration_URL,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    loading.dismiss();
+                                    Log.d("JSON", response);
+
+                                    JSONObject eventObject = new JSONObject(response);
+                                    String error_status = eventObject.getString("error");
+                                    if (error_status.equals("true")) {
+                                        String error_msg = eventObject.getString("msg");
+                                        ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                                        alertDialogBuilder.setTitle("Vendor Detail");
+                                        alertDialogBuilder.setCancelable(false);
+                                        alertDialogBuilder.setMessage(error_msg);
+                                        alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+
+                                            }
+                                        });
+                                        alertDialogBuilder.show();
+
+                                    } else {
+                                        String error_msg = eventObject.getString("msg");
+                                        ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                                        alertDialogBuilder.setTitle("Registration");
+                                        alertDialogBuilder.setCancelable(false);
+                                        alertDialogBuilder.setMessage(error_msg);
+    //                                alertDialogBuilder.setIcon(R.drawable.doubletick);
+                                        alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Intent intent=new Intent(Uplode_Reg_Photo.this,Log_In.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        });
+                                        alertDialogBuilder.show();
+                                    }
+                                }catch(Exception e){
+                                    Log.d("Tag", e.getMessage());
+
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
                                 loading.dismiss();
-                                Log.d("JSON", response);
-
-                                JSONObject eventObject = new JSONObject(response);
-                                String error_status = eventObject.getString("error");
-                                if (error_status.equals("true")) {
-                                    String error_msg = eventObject.getString("msg");
+                                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                                     ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
                                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                    alertDialogBuilder.setTitle("Vendor Detail");
-                                    alertDialogBuilder.setCancelable(false);
-                                    alertDialogBuilder.setMessage(error_msg);
+                                    alertDialogBuilder.setTitle("No connection");
+                                    alertDialogBuilder.setMessage(" Connection time out error please try again ");
                                     alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
 
                                         }
                                     });
                                     alertDialogBuilder.show();
-
-                                } else {
-                                    String error_msg = eventObject.getString("msg");
+                                } else if (error instanceof AuthFailureError) {
                                     ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
                                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                    alertDialogBuilder.setTitle("Registration");
-                                    alertDialogBuilder.setCancelable(false);
-                                    alertDialogBuilder.setMessage(error_msg);
-//                                alertDialogBuilder.setIcon(R.drawable.doubletick);
+                                    alertDialogBuilder.setTitle("Connection Error");
+                                    alertDialogBuilder.setMessage(" Authentication failure connection error please try again ");
                                     alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
-                                            Intent intent=new Intent(Uplode_Reg_Photo.this,Log_In.class);
-                                            startActivity(intent);
-                                            finish();
+
+                                        }
+                                    });
+                                    alertDialogBuilder.show();
+                                    //TODO
+                                } else if (error instanceof ServerError) {
+                                    ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                                    alertDialogBuilder.setTitle("Connection Error");
+                                    alertDialogBuilder.setMessage("Connection error please try again");
+                                    alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+
+                                        }
+                                    });
+                                    alertDialogBuilder.show();
+                                    //TODO
+                                } else if (error instanceof NetworkError) {
+                                    ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                                    alertDialogBuilder.setTitle("Connection Error");
+                                    alertDialogBuilder.setMessage("Network connection error please try again");
+                                    alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+
+                                        }
+                                    });
+                                    alertDialogBuilder.show();
+                                    //TODO
+                                } else if (error instanceof ParseError) {
+                                    ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                                    alertDialogBuilder.setTitle("Error");
+                                    alertDialogBuilder.setMessage("Parse error");
+                                    alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+
                                         }
                                     });
                                     alertDialogBuilder.show();
                                 }
-                            }catch(Exception e){
-                                Log.d("Tag", e.getMessage());
-
+    //                        Toast.makeText(Login_Activity.this,error.toString(), Toast.LENGTH_LONG ).show();
                             }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            loading.dismiss();
-                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                alertDialogBuilder.setTitle("No connection");
-                                alertDialogBuilder.setMessage(" Connection time out error please try again ");
-                                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                                alertDialogBuilder.show();
-                            } else if (error instanceof AuthFailureError) {
-                                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                alertDialogBuilder.setTitle("Connection Error");
-                                alertDialogBuilder.setMessage(" Authentication failure connection error please try again ");
-                                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                                alertDialogBuilder.show();
-                                //TODO
-                            } else if (error instanceof ServerError) {
-                                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                alertDialogBuilder.setTitle("Connection Error");
-                                alertDialogBuilder.setMessage("Connection error please try again");
-                                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                                alertDialogBuilder.show();
-                                //TODO
-                            } else if (error instanceof NetworkError) {
-                                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                alertDialogBuilder.setTitle("Connection Error");
-                                alertDialogBuilder.setMessage("Network connection error please try again");
-                                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                                alertDialogBuilder.show();
-                                //TODO
-                            } else if (error instanceof ParseError) {
-                                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                                alertDialogBuilder.setTitle("Error");
-                                alertDialogBuilder.setMessage("Parse error");
-                                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                                alertDialogBuilder.show();
-                            }
-//                        Toast.makeText(Login_Activity.this,error.toString(), Toast.LENGTH_LONG ).show();
-                        }
-                    }){
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String,String> map = new HashMap<String,String>();
-                    map.put(KEY_User_Document1,Document_img1);
-                    return map;
-                }
-            };
-
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
-            stringRequest.setRetryPolicy(mRetryPolicy);
-            requestQueue.add(stringRequest);
-        }
-
-
-        @Override
-        public void onClick(View v) {
-            if (Document_img1.equals("") || Document_img1.equals(null)) {
-                ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-                alertDialogBuilder.setTitle("Id Prof Can't Empty ");
-                alertDialogBuilder.setMessage("Id Prof Can't empty please select any one document");
-                alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
+                        }){
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String,String> map = new HashMap<String,String>();
+                        map.put(KEY_User_Document1,Document_img1);
+                        return map;
                     }
-                });
-                alertDialogBuilder.show();
-                return;
+                };
+
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+                stringRequest.setRetryPolicy(mRetryPolicy);
+                requestQueue.add(stringRequest);
             }
-            else{
-
-                if (AppStatus.getInstance(this).isOnline()) {
-                    SendDetail();
 
 
-                    //           Toast.makeText(this,"You are online!!!!",Toast.LENGTH_LONG).show();
+            @Override
+            public void onClick(View v) {
+                if (Document_img1.equals("") || Document_img1.equals(null)) {
+                    ContextThemeWrapper ctw = new ContextThemeWrapper( Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+                    alertDialogBuilder.setTitle("Id Prof Can't Empty ");
+                    alertDialogBuilder.setMessage("Id Prof Can't empty please select any one document");
+                    alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-                } else {
-
-                    Toast.makeText(this,"You are not online!!!!",Toast.LENGTH_LONG).show();
-                    Log.v("Home", "############################You are not online!!!!");
+                        }
+                    });
+                    alertDialogBuilder.show();
+                    return;
                 }
+                else{
 
+                    if (AppStatus.getInstance(this).isOnline()) {
+                        SendDetail();
+
+
+                        //           Toast.makeText(this,"You are online!!!!",Toast.LENGTH_LONG).show();
+
+                    } else {
+
+                        Toast.makeText(this,"You are not online!!!!",Toast.LENGTH_LONG).show();
+                        Log.v("Home", "############################You are not online!!!!");
+                    }
+
+                }
             }
+    }
+
+
+     */
+
+    /*
+    @Override
+    public void onClick(View v) {
+        if (Document_img1.equals("") || Document_img1.equals(null)) {
+            ContextThemeWrapper ctw = new ContextThemeWrapper(Uplode_Reg_Photo.this, R.style.Theme_AlertDialog);
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
+            alertDialogBuilder.setTitle("Id Prof Can't Empty ");
+            alertDialogBuilder.setMessage("Id Prof Can't empty please select any one document");
+            alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                }
+            });
+            alertDialogBuilder.show();
+            return;
+        } else {
+
+            if (AppStatus.getInstance(this).isOnline()) {
+                SendDetail();
+
+
+                //           Toast.makeText(this,"You are online!!!!",Toast.LENGTH_LONG).show();
+
+            } else {
+
+                Toast.makeText(this, "You are not online!!!!", Toast.LENGTH_LONG).show();
+                // Log.v("Home", "############################You are not online!!!!");
+            }
+
         }
+    }
+*/
 }
-
-
- */
