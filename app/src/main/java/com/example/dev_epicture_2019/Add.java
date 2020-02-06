@@ -24,14 +24,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Add extends Common {
 
+    final int REQUEST_IMAGE_PICTURE = 1;
     public String keyUserDocOne = "Doc1";
     ImageView IDProf;
     Button btnUpload;
     private String doc1 = "";
+    Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,14 @@ public class Add extends Common {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (options[which].equals("Take a picture")) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File tempFile = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-                    startActivityForResult(intent, 1);
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(getPackageManager()) != null)
+                    {
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_PICTURE);
+                    }
                 }
                 if (options[which].equals("Take picture from gallery")) {
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                     startActivityForResult(intent, 2);
                 }
                 if (options[which].equals("Cancel")) {
@@ -82,7 +86,7 @@ public class Add extends Common {
 
 
     /**
-     * 
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -91,63 +95,21 @@ public class Add extends Common {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
-                File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles()) {
-                    if (temp.getName().equals("temp.jpg")) {
-                        f = temp;
-                        break;
-                    }
-                }
-                try {
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), bitmapOptions);
-                    // Resize our image
-                    bitmap = getResizedBitmap(bitmap, 400);
-                    // Compress it and change its format
-                    BitMapToString(bitmap);
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Phoenix" + File.separator + "default";
-                    f.delete();
-                    OutputStream outFile = null;
-                    File fi = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
-                    try {
-                        outFile = new FileOutputStream(fi);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-                        outFile.flush();
-                        outFile.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == 2) {
-                Uri selectedImage = data.getData();
-                String[] filePath = {MediaStore.Images.Media.DATA};
-                Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
-                c.moveToFirst();
-                int columnIndex = c.getColumnIndex(filePath[0]);
-                String picturePath = c.getString(columnIndex);
-                c.close();
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-                thumbnail = getResizedBitmap(thumbnail, 400);
-                IDProf.setImageBitmap(thumbnail);
-                BitMapToString(thumbnail);
-            }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_PICTURE)
+        {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap)extras.get("data");
+            IDProf.setImageBitmap(imageBitmap);
+        }
+        if (resultCode == RESULT_OK && requestCode == 2) {
+            imageUri = data.getData();
+            IDProf.setImageURI(imageUri);
         }
     }
 
 
 
+    /*
     // Used in OnActivityResult
     public Bitmap getResizedBitmap(Bitmap mPicture, int maxPictureSize) {
         int w = mPicture.getWidth();
@@ -171,7 +133,7 @@ public class Add extends Common {
         doc1 = Base64.encodeToString(b, Base64.DEFAULT);
 
         return (doc1);
-    }
+    } */
 
     /*
 
