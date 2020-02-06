@@ -12,8 +12,7 @@
         android:layout_margin="8dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="8dp"
-        app:cardElevation="2dp"
-        android:onClick="click_card">
+        app:cardElevation="2dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +25,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scaleType="fitStart"
-                    android:adjustViewBounds="true"/>
+                    android:adjustViewBounds="true"
+                    android:onClick="click_card"/>
             </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"

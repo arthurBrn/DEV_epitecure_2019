@@ -51,10 +51,10 @@ public class Home extends Common {
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
         //this.fetchdata();
-        fetchdata();
+        fetchData();
     }
 
-    private void fetchdata() {
+    private void fetchData() {
         httpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url(url)
@@ -130,7 +130,7 @@ public class Home extends Common {
         txt_all.setTypeface(null, Typeface.NORMAL);
         txt_fav.setTypeface(null, Typeface.BOLD);
         url = "https://api.imgur.com/3/account/me/favorites";
-        fetchdata();
+        fetchData();
 
     }
     public void click_all(View view) {
@@ -139,7 +139,7 @@ public class Home extends Common {
         txt_all.setTypeface(null, Typeface.BOLD);
         txt_fav.setTypeface(null, Typeface.NORMAL);
         url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
-        fetchdata();
+        fetchData();
     }
     public void click_card(View view) {
         createIntent(this, Details.class);
