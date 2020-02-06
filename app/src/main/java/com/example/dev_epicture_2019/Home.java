@@ -3,11 +3,15 @@ package com.example.dev_epicture_2019;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +38,7 @@ import okhttp3.Response;
 public class Home extends Common{
 
     private OkHttpClient httpClient;
+    private String url = "https://api.imgur.com/3/account/me/favorites";
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
@@ -51,7 +57,6 @@ public class Home extends Common{
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
         this.fetchdata();
-
     }
 
     private void fetchdata() {
@@ -61,7 +66,7 @@ public class Home extends Common{
                 .url(url)
                 .method("GET", null)
                 .header("Authorization", "Bearer " + accesToken)
-                .header("User-agent", "DEV_epicture_2019")
+                .header("User-ageant", "DEV_epicture_2019")
                 .build();
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -106,7 +111,7 @@ public class Home extends Common{
 
             @Override
             public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
+                String path = "https://i.imgur.com/" + photos.get(position).link + ".gif";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
             }
@@ -123,6 +128,16 @@ public class Home extends Common{
                 outRect.bottom = 16; // Gap of 16px
             }
         });
+    }
+
+    public void click_fav(View view) {
+        Toast.makeText(getApplicationContext(), "You click favorite", Toast.LENGTH_LONG).show();
+    }
+    public void click_all(View view) {
+        Toast.makeText(getApplicationContext(), "You click all", Toast.LENGTH_LONG).show();
+    }
+    public void click_card(View view) {
+        Toast.makeText(getApplicationContext(), "Show card details", Toast.LENGTH_LONG).show();
     }
 
 }
