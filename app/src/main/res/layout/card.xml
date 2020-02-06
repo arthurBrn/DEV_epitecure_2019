@@ -40,7 +40,16 @@
                     tools:text="Paris"
                     android:fontFamily="sans-serif"
                     android:textColor="#333"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:drawableEnd="@drawable/ic_favorite_border_black_24dp"
+                    >
+                </TextView>
+                <!-- <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_favorite_border_black_24dp"
+                    android:id="@+id/favBtn"
+                    /> -->
             </LinearLayout>
         </LinearLayout>
         </androidx.cardview.widget.CardView>

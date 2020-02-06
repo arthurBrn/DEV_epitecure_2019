@@ -1,10 +1,13 @@
 package com.example.dev_epicture_2019;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 
@@ -71,11 +75,11 @@ public class Home extends Common {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                    JSONObject data;
-                    String msg2 = response.body().toString();
-                    JSONArray items;
-                    Log.d("====================item vcount", "onResponse: " + msg2);
-                    final List<Photo> photos = new ArrayList<>();
+                JSONObject data;
+                String msg2 = response.body().toString();
+                JSONArray items;
+                Log.d("====================item vcount", "onResponse: " + msg2);
+                final List<Photo> photos = new ArrayList<>();
                 try {
                     data = new JSONObject((response.body().string()));
                     items = data.getJSONArray("data");
@@ -133,6 +137,7 @@ public class Home extends Common {
         fetchdata();
 
     }
+
     public void click_all(View view) {
         TextView txt_all = findViewById(R.id.id_all);
         TextView txt_fav = findViewById(R.id.id_fav);
@@ -141,8 +146,37 @@ public class Home extends Common {
         url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
         fetchdata();
     }
+
     public void click_card(View view) {
         createIntent(this, Details.class);
+    }
+
+
+    public void clickableFavorites() {
+        TextView text = findViewById(R.id.title);
+
+        text.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent motion) {
+                final int LEFT = 0;
+                final int TOP = 1;
+                final int RIGHT = 2;
+                final int bottom = 3;
+
+                if (motion.getAction() == MotionEvent.ACTION_UP) {
+                    if (motion.getX() >= text.getRight() - text.getCompoundDrawables()[RIGHT].getBounds().width()) {
+                        Drawable redFavIcon = getResources().getDrawable((R.drawable.ic_favorite_border_black_24dp));
+                        redFavIcon.setBounds(0, 0, 0, 60);
+                        text.setCompoundDrawables(null, null, null, redFavIcon);
+                    }
+                }
+                return (false);
+            }
+        });
+    }
+
+    public void addFavRequest() {
+        //
     }
 
 }
