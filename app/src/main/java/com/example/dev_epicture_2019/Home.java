@@ -60,7 +60,6 @@ public class Home extends Common{
     }
 
     private void fetchdata() {
-        String url = "https://api.imgur.com/3/account/me/favorites";
         httpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url(url)
@@ -87,8 +86,9 @@ public class Home extends Common{
                         photo.title = item.getString("title");
                         photo.link = item.getString("cover");
                         photos.add(photo);
+                        runOnUiThread(() -> render(photos));
                     }
-                    runOnUiThread(() -> render(photos));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -122,12 +122,6 @@ public class Home extends Common{
             }
         };
         rv.setAdapter(adapter);
-        rv.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.bottom = 16; // Gap of 16px
-            }
-        });
     }
 
     public void click_fav(View view) {
