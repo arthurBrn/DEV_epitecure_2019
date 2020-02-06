@@ -17,8 +17,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            >
+            android:gravity="center">
             <TextView
                 android:id="@+id/id_fav"
                 android:layout_width="wrap_content"
@@ -33,6 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="All"
+                android:textStyle="bold"
                 android:textSize="20dp"
                 android:gravity="right"
                 android:onClick="click_all"/>
@@ -45,7 +45,6 @@
      android:layout_below="@+id/container"
      android:layout_above="@+id/navigationBar"
      android:scrollbars="vertical" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"

@@ -11,8 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".recoverData"
-                    android:noHistory="true">
+        <activity
+            android:name=".recoverData"
+            android:noHistory="true">
             <intent-filter>
                 <data
                     android:host="epicture.com"
@@ -24,8 +25,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginAuthenticator"
-                    android:noHistory="true">
+        <activity
+            android:name=".LoginAuthenticator"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,8 +37,10 @@
         <activity android:name=".Profile" />
         <activity android:name=".Add" />
         <activity android:name=".Search" />
-        <activity android:name=".Home">        </activity>
+        <activity android:name=".Home"/>
         <activity android:name=".Common" />
+        <activity android:name=".Details"
+            android:parentActivityName=".Home"/>
     </application>
 
 </manifest>
