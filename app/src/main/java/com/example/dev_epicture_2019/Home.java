@@ -32,44 +32,7 @@ import okhttp3.Response;
 
 public class Home extends Common{
 
-    private HashMap<String, String> mItems;
-    private TextView _response;
-    private String req;
     private OkHttpClient httpClient;
-
-    private void render(final List<Photo> photos) {
-        RecyclerView rv = findViewById(R.id.recyclerView);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<PhotoVH> adapter = new RecyclerView.Adapter<PhotoVH>() {
-            @NonNull
-            @Override
-            public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.row, null));
-                vh.photo = vh.itemView.findViewById(R.id.img_art);
-                vh.title = vh.itemView.findViewById(R.id.title_art);
-                return vh;
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
-                Picasso.get().load(path).into(holder.photo);
-                holder.title.setText(photos.get(position).title);
-            }
-
-            @Override
-            public int getItemCount() {
-                return photos.size();
-            }
-        };
-        rv.setAdapter(adapter);
-        rv.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.bottom = 16; // Gap of 16px
-            }
-        });
-    }
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
@@ -87,8 +50,7 @@ public class Home extends Common{
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
-
-        fetchdata();
+        this.fetchdata();
 
     }
 
@@ -125,6 +87,40 @@ public class Home extends Common{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+    }
+
+    private void render(final List<Photo> photos) {
+        RecyclerView rv = findViewById(R.id.recyclerView);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter<PhotoVH> adapter = new RecyclerView.Adapter<PhotoVH>() {
+            @NonNull
+            @Override
+            public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.row, null));
+                vh.photo = vh.itemView.findViewById(R.id.image);
+                vh.title = vh.itemView.findViewById(R.id.title);
+                return vh;
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
+                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
+                Picasso.get().load(path).into(holder.photo);
+                holder.title.setText(photos.get(position).title);
+            }
+
+            @Override
+            public int getItemCount() {
+                return photos.size();
+            }
+        };
+        rv.setAdapter(adapter);
+        rv.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                outRect.bottom = 16; // Gap of 16px
             }
         });
     }
