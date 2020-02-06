@@ -1,11 +1,7 @@
 package com.example.dev_epicture_2019;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +18,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.Call;
@@ -35,10 +29,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class Home extends Common{
+public class Home extends Common {
 
     private OkHttpClient httpClient;
-    private String url = "https://api.imgur.com/3/account/me/favorites";
+    private String url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
@@ -56,11 +50,11 @@ public class Home extends Common{
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
-        this.fetchdata();
+        //this.fetchdata();
+        fetchdata();
     }
 
     private void fetchdata() {
-        String url = "https://api.imgur.com/3/account/me/favorites";
         httpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url(url)
@@ -76,10 +70,15 @@ public class Home extends Common{
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    JSONObject data = new JSONObject((response.body().string()));
-                    JSONArray items = data.getJSONArray("data");
+
+                    JSONObject data;
+                    String msg2 = response.body().toString();
+                    JSONArray items;
+                    Log.d("====================item vcount", "onResponse: " + msg2);
                     final List<Photo> photos = new ArrayList<>();
+                try {
+                    data = new JSONObject((response.body().string()));
+                    items = data.getJSONArray("data");
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
                         Photo photo = new Photo();
@@ -87,8 +86,9 @@ public class Home extends Common{
                         photo.title = item.getString("title");
                         photo.link = item.getString("cover");
                         photos.add(photo);
+                        runOnUiThread(() -> render(photos));
                     }
-                    runOnUiThread(() -> render(photos));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -103,7 +103,7 @@ public class Home extends Common{
             @NonNull
             @Override
             public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.row, null));
+                PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
                 return vh;
@@ -122,22 +122,27 @@ public class Home extends Common{
             }
         };
         rv.setAdapter(adapter);
-        rv.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.bottom = 16; // Gap of 16px
-            }
-        });
     }
 
     public void click_fav(View view) {
-        Toast.makeText(getApplicationContext(), "You click favorite", Toast.LENGTH_LONG).show();
+        TextView txt_all = findViewById(R.id.id_all);
+        TextView txt_fav = findViewById(R.id.id_fav);
+        txt_all.setTypeface(null, Typeface.NORMAL);
+        txt_fav.setTypeface(null, Typeface.BOLD);
+        url = "https://api.imgur.com/3/account/me/favorites";
+        fetchdata();
+
     }
     public void click_all(View view) {
-        Toast.makeText(getApplicationContext(), "You click all", Toast.LENGTH_LONG).show();
+        TextView txt_all = findViewById(R.id.id_all);
+        TextView txt_fav = findViewById(R.id.id_fav);
+        txt_all.setTypeface(null, Typeface.BOLD);
+        txt_fav.setTypeface(null, Typeface.NORMAL);
+        url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
+        fetchdata();
     }
     public void click_card(View view) {
-        Toast.makeText(getApplicationContext(), "Show card details", Toast.LENGTH_LONG).show();
+        createIntent(this, Details.class);
     }
 
 }
