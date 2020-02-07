@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 public class Add extends Common {
 
@@ -140,6 +142,12 @@ public class Add extends Common {
         byte[] someByte = baos.toByteArray();
         String someStr = Base64.encodeToString(someByte, Base64.DEFAULT);
         return (someStr);
+    }
+
+    public File turnImageToFile(String image)
+    {
+        File file = new File(Environment.getExternalStorageState(), image);
+        return (file);
     }
 
 
