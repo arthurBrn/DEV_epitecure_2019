@@ -13,7 +13,6 @@
         android:background="@drawable/grad"
         android:paddingBottom="20dp"
         >
-
         <RelativeLayout
             android:id="@+id/imgUser"
             android:layout_width="wrap_content"
@@ -22,7 +21,6 @@
             android:layout_marginTop="15dp"
             android:background="@drawable/circle_border"
             >
-
             <ImageView
                 android:id="@+id/idUserImage"
                 android:layout_width="120dp"
@@ -32,12 +30,12 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
                 android:adjustViewBounds="true"
-                android:background="@drawable/circle"
+                android:background="@drawable/img"
                 android:padding="3dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_person_outline_black_24dp"></ImageView>
+                android:scaleType="centerCrop"
+                >
+            </ImageView>
         </RelativeLayout>
-
         <TextView
             android:id="@+id/idUserName"
             android:layout_width="wrap_content"
@@ -53,7 +51,6 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/idUserName"
             >
-
             <TextView
                 android:id="@+id/idUserBio"
                 android:layout_width="wrap_content"
@@ -76,7 +73,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/followersBg"
+            android:background="@color/grey"
             android:layout_weight="1"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -89,14 +86,12 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 >
-
                 <TextView
                     android:id="@+id/idUserNbrPictures"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="25sp" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -109,7 +104,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/followingBg"
+            android:background="@color/darkAndDarkBlue"
             android:layout_weight="1"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -122,14 +117,12 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 >
-
                 <TextView
                     android:id="@+id/idUserReputation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="25sp" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -137,9 +130,6 @@
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     />
-
-
-
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

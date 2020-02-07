@@ -14,9 +14,5 @@ public class Search extends Common {
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.changeActivity(navigationBar, 1, getApplicationContext());
         overridePendingTransition(0, 0);
-
-
     }
-
-
 }

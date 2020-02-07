@@ -1,7 +1,6 @@
 package com.example.dev_epicture_2019;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;

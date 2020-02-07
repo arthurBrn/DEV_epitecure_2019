@@ -3,24 +3,15 @@ package com.example.dev_epicture_2019;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONException;
-
 import java.io.IOException;
-import java.util.List;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Callback;
 import okhttp3.Call;
 import okhttp3.Response;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Profile extends Common {
@@ -75,7 +66,6 @@ public class Profile extends Common {
                     String st = sndobj.getString("url");
                     usr = UserFactory.createUser(sndobj.getString("url"), sndobj.getString("bio"), sndobj.getString("avatar"), sndobj.getString("reputation"));
 
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -85,7 +75,7 @@ public class Profile extends Common {
                             else
                                 userbio.setText(" ");
                             userrep.setText(usr.getUserReputation());
-                            Picasso.get().load(usr.getUserAvatar()).resize(300,300).into(useravatar);
+                            Picasso.get().load(usr.getUserAvatar()).centerCrop() .resize(300,300).into(useravatar);
                         }
                     });
                 } catch (JSONException e) {
