@@ -2,10 +2,15 @@ package com.example.dev_epicture_2019;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 
@@ -27,8 +33,11 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Home extends Common {
@@ -40,6 +49,8 @@ public class Home extends Common {
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
         TextView title;
+        ImageButton favBtn;
+        int favTouched = 0;
 
         public PhotoVH(View itemView) {
             super(itemView);
@@ -74,15 +85,15 @@ public class Home extends Common {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                    JSONObject data;
-
-                    JSONArray items;
-
-                    final List<Photo> photos = new ArrayList<>();
+                JSONObject data;
+                String msg2 = response.body().toString();
+                JSONArray items;
+                Log.d("====================item vcount", "onResponse: " + msg2);
+                final List<Photo> photos = new ArrayList<>();
                 try {
                     data = new JSONObject((response.body().string()));
                     items = data.getJSONArray("data");
-                    String msg2 = data.toString();
+                    //String msg2 = data.toString();
                     Log.d("====================item vcount", "onResponse: " + msg2);
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
@@ -114,6 +125,7 @@ public class Home extends Common {
                 PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
+                vh.favBtn = vh.itemView.findViewById(R.id.favBtn);
                 return vh;
             }
 
@@ -131,7 +143,21 @@ public class Home extends Common {
                         startActivity(intent);
                     }
                 });
+                holder.favBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (holder.favTouched == 0) {
+                            holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            holder.favTouched = 1;
+                            //addAFavorite(photos.get(position).id);
+                        } else if (holder.favTouched == 1) {
+                            holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            holder.favTouched = 0;
+                        }
+                    }
+                });
             }
+
 
             @Override
             public int getItemCount() {
@@ -148,8 +174,8 @@ public class Home extends Common {
         txt_fav.setTypeface(null, Typeface.BOLD);
         url = "https://api.imgur.com/3/account/me/favorites";
         fetchData();
-
     }
+
     public void click_all(View view) {
         TextView txt_all = findViewById(R.id.id_all);
         TextView txt_fav = findViewById(R.id.id_fav);
@@ -157,6 +183,28 @@ public class Home extends Common {
         txt_fav.setTypeface(null, Typeface.NORMAL);
         url = "https://api.imgur.com/3/gallery/user/viral";
         fetchData();
+    }
+
+    public void click_card(View view) {
+        createIntent(this, Details.class);
+    }
+
+    public void addAFavorite(String imageHash) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .build();
+        Request request = new Request.Builder()
+                .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + getAccesToken())
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setIndex(int index) {
