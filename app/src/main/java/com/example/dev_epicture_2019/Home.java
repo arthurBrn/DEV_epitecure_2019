@@ -74,7 +74,7 @@ public class Home extends Common {
                 .url(url)
                 .method("GET", null)
                 .header("Authorization", "Bearer " + accesToken)
-                .header("User-ageant", "DEV_epicture_2019")
+                .header("User-agent", "DEV_epicture_2019")
                 .build();
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -86,15 +86,11 @@ public class Home extends Common {
             public void onResponse(Call call, Response response) throws IOException {
 
                 JSONObject data;
-                String msg2 = response.body().toString();
                 JSONArray items;
-                Log.d("====================item vcount", "onResponse: " + msg2);
                 final List<Photo> photos = new ArrayList<>();
                 try {
                     data = new JSONObject((response.body().string()));
                     items = data.getJSONArray("data");
-                    //String msg2 = data.toString();
-                    Log.d("====================item vcount", "onResponse: " + msg2);
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
                         Photo photo = new Photo();
@@ -149,10 +145,12 @@ public class Home extends Common {
                         if (holder.favTouched == 0) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                             holder.favTouched = 1;
-                            //addAFavorite(photos.get(position).id);
+                            addAFavorite(photos.get(position).id);
                         } else if (holder.favTouched == 1) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                             holder.favTouched = 0;
+                            addAFavorite(photos.get(position).id);
+
                         }
                     }
                 });
@@ -190,21 +188,35 @@ public class Home extends Common {
     }
 
     public void addAFavorite(String imageHash) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
-                .method("POST", body)
-                .addHeader("Authorization", "Bearer " + getAccesToken())
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                httpClient = new OkHttpClient.Builder().build();
+                RequestBody body = RequestBody.create(null, "");
+                Request request = new Request.Builder()
+                        .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+                        .method("POST", body)
+                        .header("Authorization", "Bearer " + accesToken)
+                        .build();
+                httpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
     }
 
     public void setIndex(int index) {
