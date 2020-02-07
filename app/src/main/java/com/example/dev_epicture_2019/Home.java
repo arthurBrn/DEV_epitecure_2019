@@ -34,7 +34,7 @@ import okhttp3.Response;
 public class Home extends Common {
 
     private OkHttpClient httpClient;
-    private String url = "https://api.imgur.com/3/gallery/user/rising/0.json";
+    private String url = "https://api.imgur.com/3/gallery/user/viral";
     private int index;
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
@@ -54,7 +54,6 @@ public class Home extends Common {
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
         this.index = 1;
-        //this.fetchdata();
         fetchData();
     }
 
@@ -88,9 +87,11 @@ public class Home extends Common {
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
                         Photo photo = new Photo();
-                        photo.id = item.getString("id");
+                        if (item.getBoolean("is_album"))
+                            photo.id = item.getString("cover");
+                        else
+                            photo.id = item.getString("id");
                         photo.title = item.getString("title");
-                        photo.link = item.getString("cover");
                         photo.description = item.getString("description");
                         photos.add(photo);
                         runOnUiThread(() -> render(photos));
@@ -118,7 +119,7 @@ public class Home extends Common {
 
             @Override
             public void onBindViewHolder(@NonNull PhotoVH holder    , int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
+                String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
                 holder.photo.setOnClickListener(new View.OnClickListener() {
@@ -154,7 +155,7 @@ public class Home extends Common {
         TextView txt_fav = findViewById(R.id.id_fav);
         txt_all.setTypeface(null, Typeface.BOLD);
         txt_fav.setTypeface(null, Typeface.NORMAL);
-        url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
+        url = "https://api.imgur.com/3/gallery/user/viral";
         fetchData();
     }
 
