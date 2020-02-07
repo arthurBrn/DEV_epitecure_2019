@@ -148,6 +148,7 @@ public class Home extends Common {
                         if (holder.favTouched == 0) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                             holder.favTouched = 1;
+                            //addAFavorite(photos.get(position).id);
                         } else if (holder.favTouched == 1) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                             holder.favTouched = 0;
@@ -187,31 +188,7 @@ public class Home extends Common {
         createIntent(this, Details.class);
     }
 
-
-    public void clickableFavorites() {
-        TextView text = findViewById(R.id.title);
-
-        text.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent motion) {
-                final int LEFT = 0;
-                final int TOP = 1;
-                final int RIGHT = 2;
-                final int bottom = 3;
-
-                if (motion.getAction() == MotionEvent.ACTION_UP) {
-                    if (motion.getX() >= text.getRight() - text.getCompoundDrawables()[RIGHT].getBounds().width()) {
-                        Drawable redFavIcon = getResources().getDrawable((R.drawable.ic_favorite_border_black_24dp));
-                        redFavIcon.setBounds(0, 0, 0, 60);
-                        text.setCompoundDrawables(null, null, null, redFavIcon);
-                    }
-                }
-                return (false);
-            }
-        });
-    }
-
-    public void addFavRequest(String imageHash) {
+    public void addAFavorite(String imageHash) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("text/plain");

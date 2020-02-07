@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".Search">
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search"
-        android:layout_centerInParent="true"/>
+        android:padding="15dp"
+        >
+        <SearchView
+            android:id="@+id/searchBarId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey"
+            />
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
@@ -18,5 +26,7 @@
         android:layout_height="wrap_content"
         app:menu="@menu/navigation_bottom_bar"
         android:layout_alignParentBottom="true"/>
+
+
 
 </RelativeLayout>
