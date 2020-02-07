@@ -31,14 +31,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.msebera.android.httpclient.client.HttpClient;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Home extends Common {
 
@@ -105,9 +108,9 @@ public class Home extends Common {
                         photo.title = item.getString("title");
                         photo.description = item.getString("description");
                         photos.add(photo);
-                        runOnUiThread(() -> render(photos));
-                    }
 
+                    }
+                    runOnUiThread(() -> render(photos));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -143,17 +146,14 @@ public class Home extends Common {
                         startActivity(intent);
                     }
                 });
-                holder.favBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (holder.favTouched == 0) {
-                            holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-                            holder.favTouched = 1;
-                            //addAFavorite(photos.get(position).id);
-                        } else if (holder.favTouched == 1) {
-                            holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                            holder.favTouched = 0;
-                        }
+                holder.favBtn.setOnClickListener(v -> {
+                    if (holder.favTouched == 0) {
+                        holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        holder.favTouched = 1;
+                        addAFavorite(photos.get(position).id);
+                    } else if (holder.favTouched == 1) {
+                        holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                        holder.favTouched = 0;
                     }
                 });
             }
@@ -190,21 +190,37 @@ public class Home extends Common {
     }
 
     public void addAFavorite(String imageHash) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
-                .method("POST", body)
-                .addHeader("Authorization", "Bearer " + getAccesToken())
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                httpClient = new OkHttpClient.Builder().build();
+                RequestBody body = RequestBody.create(null, "");
+                Request request = new Request.Builder()
+                        .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+                        .method("POST", body)
+                        .header("Authorization", "Bearer " + accesToken)
+                        .build();
+                httpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+
+
     }
 
     public void setIndex(int index) {

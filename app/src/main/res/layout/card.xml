@@ -39,8 +39,7 @@
                     android:fontFamily="sans-serif"
                     android:textColor="#333"
                     android:textSize="18sp"
-                    android:layout_weight="1"
-                    >
+                    android:layout_weight="1">
                 </TextView>
 
                 <ImageButton
