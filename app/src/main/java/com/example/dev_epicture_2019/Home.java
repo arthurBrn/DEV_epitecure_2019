@@ -29,8 +29,11 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Home extends Common {
@@ -135,7 +138,6 @@ public class Home extends Common {
         txt_fav.setTypeface(null, Typeface.BOLD);
         url = "https://api.imgur.com/3/account/me/favorites";
         fetchdata();
-
     }
 
     public void click_all(View view) {
@@ -175,8 +177,21 @@ public class Home extends Common {
         });
     }
 
-    public void addFavRequest() {
-        //
+    public void addFavRequest(String imageHash) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .build();
+        Request request = new Request.Builder()
+                .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + getAccesToken())
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 }
