@@ -4,4 +4,5 @@ public class Photo {
     String id;
     String title;
     String link;
+    String description;
 }
