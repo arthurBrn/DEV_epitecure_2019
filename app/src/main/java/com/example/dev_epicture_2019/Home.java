@@ -149,6 +149,7 @@ public class Home extends Common {
                         if (holder.favTouched == 0) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                             holder.favTouched = 1;
+                            // add image64 byte
                             //addAFavorite(photos.get(position).id);
                         } else if (holder.favTouched == 1) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
@@ -202,6 +203,7 @@ public class Home extends Common {
                 .build();
         try {
             Response response = client.newCall(request).execute();
+            System.out.println(response.body().string());
         } catch (IOException e) {
             e.printStackTrace();
         }

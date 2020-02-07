@@ -16,6 +16,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class Add extends Common {
 
     final int REQUEST_IMAGE_PICTURE = 1;
@@ -41,8 +49,8 @@ public class Add extends Common {
         Common.changeActivity(navigationBar, 2, getApplicationContext());
         overridePendingTransition(0, 0);
 
-        IDProf = (ImageView) findViewById(R.id.IdProf);
-        btnUpload = (Button) findViewById(R.id.uploadBtn);
+        IDProf = (ImageView)findViewById(R.id.IdProf);
+        btnUpload = (Button)findViewById(R.id.uploadBtn);
         userAccessToken = getAccesToken();
 
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -76,8 +84,6 @@ public class Add extends Common {
         builderAlert.show();
     }
 
-
-
     /**
      * @param data
      */
@@ -109,18 +115,18 @@ public class Add extends Common {
         super.onActivityResult(requestCode, resultCode, data);
 
         if ((resultCode == RESULT_OK) && (requestCode == REQUEST_IMAGE_PICTURE)) {
-            changeUploadLayout();
+            //changeUploadLayout();
             displayThumbnailFromCamera(data);
-            mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
-            //makeTheRequest(imageBase64);
+            //mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
+            //imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
+            //requestUploadImage(imageBase64);
         }
         if ((resultCode == RESULT_OK) && (requestCode == 2)) {
-            changeUploadLayout();
+            //changeUploadLayout();
             displayThumbnailFromGallery(data);
-            mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
-            //makeTheRequest(imageBase64);
+            //mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
+            //imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
+            //requestUploadImage(imageBase64);
         }
     }
 
@@ -148,6 +154,30 @@ public class Add extends Common {
     {
         File file = new File(Environment.getExternalStorageState(), image);
         return (file);
+    }
+
+
+    // REQUEST
+
+    public void requestUploadImage(String image64) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", image64, RequestBody.create(mediaType, image64))
+                .build();
+        Request request = new Request.Builder()
+                .url("https://api.imgur.com/3/upload")
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + getAccesToken())
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            System.out.println(response.body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
