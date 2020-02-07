@@ -1,5 +1,6 @@
 package com.example.dev_epicture_2019;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +43,14 @@ import okhttp3.Response;
 public class Home extends Common {
 
     private OkHttpClient httpClient;
-    private String url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
+    private String url = "https://api.imgur.com/3/gallery/user/rising/0.json";
+    private int index;
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
         TextView title;
+        ImageButton favBtn;
+        int favTouched = 0;
 
         public PhotoVH(View itemView) {
             super(itemView);
@@ -57,11 +64,12 @@ public class Home extends Common {
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
+        this.index = 1;
         //this.fetchdata();
-        fetchdata();
+        fetchData();
     }
 
-    private void fetchdata() {
+    private void fetchData() {
         httpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url(url)
@@ -86,12 +94,15 @@ public class Home extends Common {
                 try {
                     data = new JSONObject((response.body().string()));
                     items = data.getJSONArray("data");
+                    //String msg2 = data.toString();
+                    Log.d("====================item vcount", "onResponse: " + msg2);
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
                         Photo photo = new Photo();
                         photo.id = item.getString("id");
                         photo.title = item.getString("title");
                         photo.link = item.getString("cover");
+                        photo.description = item.getString("description");
                         photos.add(photo);
                         runOnUiThread(() -> render(photos));
                     }
@@ -113,15 +124,38 @@ public class Home extends Common {
                 PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
+                vh.favBtn = vh.itemView.findViewById(R.id.favBtn);
                 return vh;
             }
 
             @Override
-            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).link + ".gif";
+            public void onBindViewHolder(@NonNull PhotoVH holder    , int position) {
+                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
+                holder.photo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setIndex(position);
+                        Intent intent = new Intent(getApplicationContext(), Details.class);
+                        intent.putExtra("galeryId", photos.get(position).id);
+                        startActivity(intent);
+                    }
+                });
+                holder.favBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (holder.favTouched == 0) {
+                            holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            holder.favTouched = 1;
+                        } else if (holder.favTouched == 1) {
+                            holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            holder.favTouched = 0;
+                        }
+                    }
+                });
             }
+
 
             @Override
             public int getItemCount() {
@@ -137,7 +171,7 @@ public class Home extends Common {
         txt_all.setTypeface(null, Typeface.NORMAL);
         txt_fav.setTypeface(null, Typeface.BOLD);
         url = "https://api.imgur.com/3/account/me/favorites";
-        fetchdata();
+        fetchData();
     }
 
     public void click_all(View view) {
@@ -146,7 +180,7 @@ public class Home extends Common {
         txt_all.setTypeface(null, Typeface.BOLD);
         txt_fav.setTypeface(null, Typeface.NORMAL);
         url = "https://api.imgur.com/3/gallery/hot/viral/all/0?showViral=true&mature=true&album_previews=true";
-        fetchdata();
+        fetchData();
     }
 
     public void click_card(View view) {
@@ -193,5 +227,18 @@ public class Home extends Common {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }
