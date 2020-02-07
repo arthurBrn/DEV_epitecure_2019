@@ -2,18 +2,12 @@ package com.example.dev_epicture_2019;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,14 +21,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -50,7 +41,7 @@ public class Home extends Common {
         ImageView photo;
         TextView title;
         ImageButton favBtn;
-        int favTouched = 0;
+        int is_fav = 0;
 
         public PhotoVH(View itemView) {
             super(itemView);
@@ -100,8 +91,8 @@ public class Home extends Common {
                             photo.id = item.getString("id");
                         photo.title = item.getString("title");
                         photo.description = item.getString("description");
+                        photo.favorite = item.getBoolean("favorite");
                         photos.add(photo);
-
                     }
                     runOnUiThread(() -> render(photos));
                 } catch (JSONException e) {
@@ -130,6 +121,13 @@ public class Home extends Common {
                 String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
+                if (photos.get(position).favorite == true) {
+                    holder.is_fav = 1;
+                    checkHeart(holder);
+                } else {
+                    holder.is_fav = 0;
+                    uncheckHeart(holder);
+                }
                 holder.photo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -142,27 +140,32 @@ public class Home extends Common {
                 holder.favBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (holder.favTouched == 0) {
-                            holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-                            holder.favTouched = 1;
+                        if (holder.is_fav == 0) {
+                            checkHeart(holder);
                             addAFavorite(photos.get(position).id);
-                        } else if (holder.favTouched == 1) {
-                            holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                            holder.favTouched = 0;
+                        } else if (holder.is_fav == 1) {
+                            uncheckHeart(holder);
                             addAFavorite(photos.get(position).id);
-
                         }
                     }
                 });
             }
-
-
             @Override
             public int getItemCount() {
                 return photos.size();
             }
         };
         rv.setAdapter(adapter);
+    }
+
+    public void checkHeart(@NonNull PhotoVH holder) {
+        holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+        holder.is_fav = 1;
+    }
+
+    public void uncheckHeart(@NonNull PhotoVH holder) {
+        holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        holder.is_fav = 0;
     }
 
     public void click_fav(View view) {
@@ -205,14 +208,7 @@ public class Home extends Common {
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
+                    public void onResponse(Call call, Response response_fav) throws IOException {
                     }
                 });
             }
