@@ -19,6 +19,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".recoverData"
+            android:screenOrientation="portrait"
             android:noHistory="true">
             <intent-filter>
                 <data
@@ -33,6 +34,7 @@
         </activity>
         <activity
             android:name=".LoginAuthenticator"
+            android:screenOrientation="portrait"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,12 +42,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Profile" />
-        <activity android:name=".Add" />
-        <activity android:name=".Search" />
+        <activity android:name=".Profile"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Add"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Search"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Home"/>
-        <activity android:name=".Common" />
+        <activity android:name=".Common"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Details"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Home"/>
     </application>
 
