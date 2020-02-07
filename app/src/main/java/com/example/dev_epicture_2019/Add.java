@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +17,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class Add extends Common {
 
     final int REQUEST_IMAGE_PICTURE = 1;
@@ -41,8 +52,8 @@ public class Add extends Common {
         Common.changeActivity(navigationBar, 2, getApplicationContext());
         overridePendingTransition(0, 0);
 
-        IDProf = (ImageView) findViewById(R.id.IdProf);
-        btnUpload = (Button) findViewById(R.id.uploadBtn);
+        IDProf = (ImageView)findViewById(R.id.IdProf);
+        btnUpload = (Button)findViewById(R.id.uploadBtn);
         userAccessToken = getAccesToken();
 
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -76,8 +87,6 @@ public class Add extends Common {
         builderAlert.show();
     }
 
-
-
     /**
      * @param data
      */
@@ -109,18 +118,27 @@ public class Add extends Common {
         super.onActivityResult(requestCode, resultCode, data);
 
         if ((resultCode == RESULT_OK) && (requestCode == REQUEST_IMAGE_PICTURE)) {
-            changeUploadLayout();
+            //changeUploadLayout();
             displayThumbnailFromCamera(data);
             mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
-            //makeTheRequest(imageBase64);
+            String image46 = turnBitMapObjectIntoBase64String(mbitmap);
+            //requestUploadImage(imageBase64);
+            try {
+                tryingToUpload(image46);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
         if ((resultCode == RESULT_OK) && (requestCode == 2)) {
-            changeUploadLayout();
+            //changeUploadLayout();
             displayThumbnailFromGallery(data);
             mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
-            //makeTheRequest(imageBase64);
+            String image64 = turnBitMapObjectIntoBase64String(mbitmap);
+            try {
+                tryingToUpload(image64);
+            } catch (IOException e) {
+                e.getStackTrace();
+            }
         }
     }
 
@@ -150,5 +168,72 @@ public class Add extends Common {
         return (file);
     }
 
+    // REQUEST
+    public void requestUploadImage(String image64) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image", image64, RequestBody.create(mediaType, image64))
+                .build();
+        Request request = new Request.Builder()
+                .url("https://api.imgur.com/3/upload")
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + getAccesToken())
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            System.out.println(response.body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void tryingToUpload(String image64Base) throws IOException
+    {
+        OkHttpClient cli = new OkHttpClient.Builder().build();
+        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("image", image64Base)
+                .build();
+        Request req = new Request.Builder()
+                .url("https://api.imgur.com/3/upload")
+                .method("POST", body)
+                .header("Authorization", getAccesToken()) // check for client ID
+                .header("User-ageant", "DEV_epicture_2019")
+                .build();
+        cli.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("failure Response", mMessage);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String mMessage = response.body().string();
+                //Log.e(TAG, mMessage);
+            }
+        });
+    }
+
+
+    /*
+
+    Recover the user photo address, turns it into a file, then bitmap, then string and send it, might work
+
+    File imgFile = new  File("/sdcard/Images/test_image.jpg");
+
+if(imgFile.exists()){
+
+    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+    ImageView myImage = (ImageView) findViewById(R.id.imageviewTest);
+
+    myImage.setImageBitmap(myBitmap);
+
+}
+
+     */
 
 }
