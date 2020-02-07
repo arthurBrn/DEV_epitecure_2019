@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,6 +150,11 @@ public class Home extends Common {
                         if (holder.favTouched == 0) {
                             holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                             holder.favTouched = 1;
+                            try {
+                                tryingToPostFav(photos.get(position).id);
+                            } catch(IOException e) {
+                                e.getStackTrace();
+                            }
                             // add image64 byte
                             //addAFavorite(photos.get(position).id);
                         } else if (holder.favTouched == 1) {
@@ -190,23 +196,29 @@ public class Home extends Common {
         createIntent(this, Details.class);
     }
 
-    public void addAFavorite(String imageHash) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
+
+    public void tryingToPostFav(String hashImage) throws IOException {
+        httpClient = new OkHttpClient.Builder().build();
         RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+        Request req = new Request.Builder()
+                .url("https://api.imgur.com/3/image/" + hashImage + "/favorite")
                 .method("POST", body)
-                .addHeader("Authorization", "Bearer " + getAccesToken())
+                .header("Authorization", "Bearer " + getAccesToken())
+                .header("User-ageant", "DEV_epicture_2019")
                 .build();
-        try {
-            Response response = client.newCall(request).execute();
-            System.out.println(response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        httpClient.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.w("failure Response", mMessage);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String mMessage = response.body().string();
+                //Log.e(TAG, mMessage);
+            }
+        });
     }
 
     public void setIndex(int index) {

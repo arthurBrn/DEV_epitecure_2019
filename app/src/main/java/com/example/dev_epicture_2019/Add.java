@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -117,16 +120,25 @@ public class Add extends Common {
         if ((resultCode == RESULT_OK) && (requestCode == REQUEST_IMAGE_PICTURE)) {
             //changeUploadLayout();
             displayThumbnailFromCamera(data);
-            //mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            //imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
+            mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
+            String image46 = turnBitMapObjectIntoBase64String(mbitmap);
             //requestUploadImage(imageBase64);
+            try {
+                tryingToUpload(image46);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
         if ((resultCode == RESULT_OK) && (requestCode == 2)) {
             //changeUploadLayout();
             displayThumbnailFromGallery(data);
-            //mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            //imageBase64 = turnBitMapObjectIntoBase64String(mbitmap);
-            //requestUploadImage(imageBase64);
+            mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
+            String image64 = turnBitMapObjectIntoBase64String(mbitmap);
+            try {
+                tryingToUpload(image64);
+            } catch (IOException e) {
+                e.getStackTrace();
+            }
         }
     }
 
@@ -156,9 +168,7 @@ public class Add extends Common {
         return (file);
     }
 
-
     // REQUEST
-
     public void requestUploadImage(String image64) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -180,5 +190,50 @@ public class Add extends Common {
         }
     }
 
+
+    public void tryingToUpload(String image64Base) throws IOException
+    {
+        OkHttpClient cli = new OkHttpClient.Builder().build();
+        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("image", image64Base)
+                .build();
+        Request req = new Request.Builder()
+                .url("https://api.imgur.com/3/upload")
+                .method("POST", body)
+                .header("Authorization", getAccesToken()) // check for client ID
+                .header("User-ageant", "DEV_epicture_2019")
+                .build();
+        cli.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("failure Response", mMessage);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String mMessage = response.body().string();
+                //Log.e(TAG, mMessage);
+            }
+        });
+    }
+
+
+    /*
+
+    Recover the user photo address, turns it into a file, then bitmap, then string and send it, might work
+
+    File imgFile = new  File("/sdcard/Images/test_image.jpg");
+
+if(imgFile.exists()){
+
+    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+    ImageView myImage = (ImageView) findViewById(R.id.imageviewTest);
+
+    myImage.setImageBitmap(myBitmap);
+
+}
+
+     */
 
 }
