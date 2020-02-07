@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DEV_epicture_2019</string>
+    <string name="app_name">Epicture</string>
     <string name="nav_home">Home</string>
     <string name="nav_search">Search</string>
     <string name="nav_add">Add</string>
