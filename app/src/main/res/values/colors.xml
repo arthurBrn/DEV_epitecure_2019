@@ -17,6 +17,10 @@
     <color name="followingBg">#49BEFF</color>
     <color name="grey">#E5E5E5</color>
     <color name="green">#00ff00</color>
+    <color name="dark">#000000</color>
+
+    <color name="darkButNotTooDark">#2B2D2F</color>
+    <color name="darkAndDarkBlue">#383838</color>
 
     <color name="white">#FFFFFF</color>
 </resources>

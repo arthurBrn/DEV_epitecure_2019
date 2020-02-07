@@ -12,12 +12,16 @@
         android:layout_height="wrap_content"
         android:padding="15dp"
         >
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <SearchView
             android:id="@+id/searchBarId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/grey"
+            android:background="@drawable/rounded_search_view"
             />
+        </RelativeLayout>
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
