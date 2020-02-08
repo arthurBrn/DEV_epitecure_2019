@@ -168,51 +168,31 @@ public class Add extends Common {
         return (file);
     }
 
-    // REQUEST
-    public void requestUploadImage(String image64) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", image64, RequestBody.create(mediaType, image64))
-                .build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/upload")
-                .method("POST", body)
-                .addHeader("Authorization", "Bearer " + getAccesToken())
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            System.out.println(response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     public void tryingToUpload(String image64Base) throws IOException
     {
-        OkHttpClient cli = new OkHttpClient.Builder().build();
-        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("image", image64Base)
-                .build();
-        Request req = new Request.Builder()
-                .url("https://api.imgur.com/3/upload")
-                .method("POST", body)
-                .header("Authorization", getAccesToken()) // check for client ID
-                .header("User-ageant", "DEV_epicture_2019")
-                .build();
-        cli.newCall(req).enqueue(new Callback() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                String mMessage = e.getMessage().toString();
-                Log.d("failure Response", mMessage);
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String mMessage = response.body().string();
-                //Log.e(TAG, mMessage);
+            public void run() {
+                OkHttpClient cli = new OkHttpClient.Builder().build();
+                RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("image", image64Base)
+                        .build();
+                Request req = new Request.Builder()
+                        .url("")
+                        .method("POST", body)
+                        .header("Authorization", getAccesToken())
+                        .header("User-agent", "DEV_epicture_2019")
+                        .build();
+                cli.newCall(req).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        String mMessage = e.getMessage().toString();
+                    }
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String mMessage = response.body().string();
+                    }
+                });
             }
         });
     }
