@@ -106,10 +106,6 @@ public class Home extends Common {
                 String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
-                String name = photos.get(position).title;
-                Boolean fav = photos.get(position).favorite;
-                String debug = name + fav;
-                Log.d("TAG", "onBindViewHolder: " + debug);
                 if (photos.get(position).favorite == true) {
                     holder.is_fav = 1;
                     checkHeart(holder);
@@ -184,7 +180,6 @@ public class Home extends Common {
 
     public void addAFavorite(String imageHash, String mtype) {
         String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
-        Log.d("TAG", "addAFavorite: " + url);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
