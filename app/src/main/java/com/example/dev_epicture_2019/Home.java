@@ -115,10 +115,10 @@ public class Home extends Common {
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
                             checkHeart(holder);
-                            addAFavorite(photos.get(position).id, photos.get(position).type);
+                            new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, getAccesToken());
                         } else if (holder.is_fav == 1) {
                             uncheckHeart(holder);
-                            addAFavorite(photos.get(position).id, photos.get(position).type);
+                            new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, getAccesToken());
                         }
                     }
                 });
@@ -158,24 +158,6 @@ public class Home extends Common {
         txt_fav.setTypeface(null, Typeface.NORMAL);
         url = "https://api.imgur.com/3/gallery/user/viral";
         fetchData();
-    }
-
-    public void addAFavorite(String imageHash, String mtype) {
-        String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
-        runOnUiThread(() -> {
-            httpClient = new OkHttpClient.Builder().build();
-            Request request = new ApiHandler().buildPostFavorite(url, getAccesToken());
-            httpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response_fav) throws IOException {
-                }
-            });
-        });
     }
 
     @Override

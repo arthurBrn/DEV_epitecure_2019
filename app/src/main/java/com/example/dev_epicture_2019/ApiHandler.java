@@ -49,4 +49,23 @@ public class ApiHandler {
         return request;
     }
 
+    public void addAFavorite(String imageHash, String mtype, String accesToken) {
+        String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
+        OkHttpClient httpClient;
+        //runOnUiThread(() -> {
+            httpClient = new OkHttpClient.Builder().build();
+            Request request = new ApiHandler().buildPostFavorite(url, accesToken);
+            httpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response_fav) throws IOException {
+                }
+            });
+        //});
+    }
+
 }

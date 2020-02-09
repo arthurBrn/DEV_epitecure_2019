@@ -123,16 +123,13 @@ public class Search extends Common {
                         startActivity(intent);
                     }
                 });
-                holder.favBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (holder.is_fav == 0) {
-                            checkHeart(holder);
-                            new Home().addAFavorite(photos.get(position).id, photos.get(position).type);
-                        } else if (holder.is_fav == 1) {
-                            uncheckHeart(holder);
-                            new Home().addAFavorite(photos.get(position).id, photos.get(position).type);
-                        }
+                holder.favBtn.setOnClickListener(v -> {
+                    if (holder.is_fav == 0) {
+                        checkHeart(holder);
+                        new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, accesToken);
+                    } else if (holder.is_fav == 1) {
+                        uncheckHeart(holder);
+                        new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, accesToken);
                     }
                 });
             }

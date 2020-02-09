@@ -18,6 +18,4 @@ public class Adapter {
             super(itemView);
         }
     }
-
-
 }

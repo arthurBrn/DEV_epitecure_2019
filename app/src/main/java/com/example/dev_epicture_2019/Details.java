@@ -109,10 +109,10 @@ public class Details extends AppCompatActivity {
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
                             checkHeart(holder);
-                            new Home().addAFavorite(images.get(position).id, "image");
+                            new ApiHandler().addAFavorite(images.get(position).id, "image", accessToken);
                         } else if (holder.is_fav == 1) {
                             uncheckHeart(holder);
-                            new Home().addAFavorite(images.get(position).id, "image");
+                            new ApiHandler().addAFavorite(images.get(position).id, "image", accessToken);
                         }
                     }
                 });
