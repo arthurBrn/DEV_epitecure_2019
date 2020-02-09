@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,17 +49,16 @@ public class Profile extends Common {
     PictureFactory pic;
     RecyclerView profilRv;
 
+    private static class PhotoVH extends RecyclerView.ViewHolder {
+        ImageView photo;
+        TextView title;
+        ImageButton favBtn;
+        int is_fav = 0;
 
-    // Inner class serving of ViewHolder
-    public class ProfilView extends RecyclerView.ViewHolder {
-        ImageView picture;
-
-        public ProfilView(@NonNull View itemView) {
+        public PhotoVH(View itemView) {
             super(itemView);
-            picture = findViewById(R.id.profil_images_id);
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,6 @@ public class Profile extends Common {
         username = findViewById(R.id.idUserName);
         userbio = findViewById(R.id.idUserBio);
         username = findViewById(R.id.idUserName);
-        profilRv = findViewById(R.id.profilRecyclerView);
 
         fetchUserDataForProfilHeader();
         fetchUserImages();
@@ -85,7 +84,6 @@ public class Profile extends Common {
                 .url(userInfo)
                 .method("GET", null)
                 .header("Authorization", "Bearer " + USER_TOKEN)
-                .header("User-agent", "DEV_epicture_2019")
                 .build();
         return (request);
     }
@@ -135,7 +133,6 @@ public class Profile extends Common {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                profilRv = findViewById(R.id.profilRecyclerView);
                 JSONObject fullObject;
                 JSONArray arrayOfObject;
                 JSONObject oneImageObject;
@@ -148,9 +145,10 @@ public class Profile extends Common {
                         //pic = PictureFactory.createUser(oneImageObject.getString("id"), oneImageObject.getString("title"), oneImageObject.getString("description"), oneImageObject.getString("favorite"));
                         oneImageObject = arrayOfObject.getJSONObject(j);
                         photoObject.id = oneImageObject.getString("id");
+                        photoObject.title = oneImageObject.getString("title");
                         mPictures.add(photoObject);
                     }
-                    runOnUiThread(() -> renderGridLayout(mPictures, profilRv));
+                    runOnUiThread(() -> renderGridLayout(mPictures));
                 } catch (JSONException e) {
                     e.getStackTrace();
                 }
@@ -158,37 +156,36 @@ public class Profile extends Common {
         });
     }
 
-    private void renderGridLayout(final List<Photo> pics, RecyclerView profilRv)
+    private void renderGridLayout(final List<Photo> pics)
     {
-        Log.d("mPictures", "mpitcures size : " + pics.size());
-        profilRv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-        Log.d("mPictures", "mpitcures size : " + pics.size());
-        RecyclerView.Adapter<ProfilView> rvProfilAdapter = new RecyclerView.Adapter<ProfilView>() {
+        String debug = String.valueOf(pics.size());
+        Log.d("TAG", "renderGridLayout: " + debug);
+        RecyclerView rv = findViewById(R.id.recyclerView);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter<Profile.PhotoVH> adapter = new RecyclerView.Adapter<Profile.PhotoVH>() {
+
             @NonNull
             @Override
-            public ProfilView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                Log.d("mPictures", "mpitcures size : " + pics.size());
-                ProfilView pv = new ProfilView(getLayoutInflater().inflate(R.layout.profil_card, null));
-                pv.picture = pv.itemView.findViewById(R.id.profil_images_id);
-                return (pv);
+            public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Profile.PhotoVH vh = new Profile.PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
+                vh.photo = vh.itemView.findViewById(R.id.image);
+                vh.title = vh.itemView.findViewById(R.id.title);
+                return vh;
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ProfilView holder, int position)
-            {
-                String requestUrl = "https://i.imgur.com/" + pics.get(position).id + ".jpg";
-                Picasso.get().load(requestUrl).into(holder.picture);
-                holder.picture.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "image info", Toast.LENGTH_LONG).show();
-                    }
-                });
+            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
+                String path = "https://i.imgur.com/" + pics.get(position).id + ".jpg";
+                Picasso.get().load(path).into(holder.photo);
+                holder.title.setText(pics.get(position).title);
             }
+
             @Override
-            public int getItemCount() {return 0;}
+            public int getItemCount() {
+                return pics.size();
+            }
         };
-        profilRv.setAdapter(rvProfilAdapter);
+        rv.setAdapter(adapter);
     }
 
 }
