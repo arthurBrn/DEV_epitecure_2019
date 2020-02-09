@@ -1,10 +1,8 @@
 package com.example.dev_epicture_2019;
 
-public class Photo {
+public class Image {
     String id;
     String title;
     String description;
-    String link;
     Boolean favorite;
-    String type;
 }

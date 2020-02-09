@@ -3,12 +3,13 @@ package com.example.dev_epicture_2019;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +38,6 @@ public class Home extends Common {
     private OkHttpClient httpClient;
     private String url = "https://api.imgur.com/3/gallery/user/viral";
     private int index;
-    RecyclerView rv;
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
@@ -58,7 +58,6 @@ public class Home extends Common {
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
         this.index = 1;
-        rv = findViewById(R.id.recyclerView);
         fetchData();
     }
 
@@ -68,7 +67,6 @@ public class Home extends Common {
                 .url(url)
                 .method("GET", null)
                 .header("Authorization", "Bearer " + accesToken)
-                .header("User-agent", "DEV_epicture_2019")
                 .build();
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -79,25 +77,9 @@ public class Home extends Common {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                JSONObject data;
-                JSONArray items;
-                final List<Photo> photos = new ArrayList<>();
                 try {
-                    data = new JSONObject((response.body().string()));
-                    items = data.getJSONArray("data");
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        Photo photo = new Photo();
-                        if (item.getBoolean("is_album"))
-                            photo.id = item.getString("cover");
-                        else
-                            photo.id = item.getString("id");
-                        photo.title = item.getString("title");
-                        photo.description = item.getString("description");
-                        photo.favorite = item.getBoolean("favorite");
-                        photos.add(photo);
-                    }
-                    runOnUiThread(() -> render(photos, rv));
+                    final List<Photo> photos = new Parser().getData(response);
+                    runOnUiThread(() -> render(photos));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -105,8 +87,8 @@ public class Home extends Common {
         });
     }
 
-    private void render(final List<Photo> photos, RecyclerView rv) {
-        //RecyclerView rv = findViewById(R.id.recyclerView);
+    private void render(final List<Photo> photos) {
+        RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.Adapter<PhotoVH> adapter = new RecyclerView.Adapter<PhotoVH>() {
             @NonNull
@@ -121,9 +103,13 @@ public class Home extends Common {
 
             @Override
             public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
+                String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
+                String name = photos.get(position).title;
+                Boolean fav = photos.get(position).favorite;
+                String debug = name + fav;
+                Log.d("TAG", "onBindViewHolder: " + debug);
                 if (photos.get(position).favorite == true) {
                     holder.is_fav = 1;
                     checkHeart(holder);
@@ -134,10 +120,13 @@ public class Home extends Common {
                 holder.photo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setIndex(position);
-                        Intent intent = new Intent(getApplicationContext(), Details.class);
-                        intent.putExtra("galeryId", photos.get(position).id);
-                        startActivity(intent);
+                        if (photos.get(position).type.equals("album")) {
+                            Intent intent = new Intent(getApplicationContext(), Details.class);
+                            intent.putExtra("galleryId", photos.get(position).id);
+                            intent.putExtra("photo", photos.get(position).type);
+                            intent.putExtra("accessToken", getAccesToken());
+                            startActivity(intent);
+                        }
                     }
                 });
                 holder.favBtn.setOnClickListener(new View.OnClickListener() {
@@ -145,10 +134,10 @@ public class Home extends Common {
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
                             checkHeart(holder);
-                            addAFavorite(photos.get(position).id);
+                            addAFavorite(photos.get(position).id, photos.get(position).type);
                         } else if (holder.is_fav == 1) {
                             uncheckHeart(holder);
-                            addAFavorite(photos.get(position).id);
+                            addAFavorite(photos.get(position).id, photos.get(position).type);
                         }
                     }
                 });
@@ -193,14 +182,16 @@ public class Home extends Common {
         createIntent(this, Details.class);
     }
 
-    public void addAFavorite(String imageHash) {
+    public void addAFavorite(String imageHash, String mtype) {
+        String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
+        Log.d("TAG", "addAFavorite: " + url);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 httpClient = new OkHttpClient.Builder().build();
                 RequestBody body = RequestBody.create(null, "");
                 Request request = new Request.Builder()
-                        .url("https://api.imgur.com/3/image/" + imageHash + "/favorite")
+                        .url(url)
                         .method("POST", body)
                         .header("Authorization", "Bearer " + accesToken)
                         .build();

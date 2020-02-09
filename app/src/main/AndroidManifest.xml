@@ -53,12 +53,9 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             />
         <activity android:name=".Search"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            />
+            android:screenOrientation="portrait"/>
         <activity android:name=".Home"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            />
+            android:screenOrientation="portrait"/>
         <activity android:name=".Common"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
@@ -71,3 +68,14 @@
     </application>
 
 </manifest>
+
+
+<!-- 
+android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            />
+        <activity android:name=".Home"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            />
+
+-->
