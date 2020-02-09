@@ -32,17 +32,38 @@
         android:background="@drawable/rounded_image_place_holder"
         android:src="@color/grey"
         />
-        <Button
-            android:id="@+id/uploadBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Browse"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/rounded_upload_btn"
+
+    <EditText
+        android:id="@+id/upload_file_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp"
+        android:textColor="@color/dark"
+        android:hint="Some description"
         />
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_upload_btn"
+        android:text="Browse"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/uploadProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginTop="20dp"
+        />
+
 </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

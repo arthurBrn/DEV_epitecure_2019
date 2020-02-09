@@ -2,6 +2,7 @@ package com.example.dev_epicture_2019;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +46,8 @@ public class Profile extends Common {
     TextView userrep;
     UserFactory usr;
     RecyclerView profilRv;
-    RvAdapter rvAdapter;
-    RecyclerView.Adapter<ProfilView> rvProfilAdapter;
+    //RvAdapter rvAdapter;
+    //RecyclerView.Adapter<ProfilView> rvProfilAdapter;
 
 
     public class ProfilView extends RecyclerView.ViewHolder {
@@ -72,7 +73,7 @@ public class Profile extends Common {
         token = getAccesToken();
         username = findViewById(R.id.idUserName);
         profilRv = findViewById(R.id.profilRecyclerView);
-        rvAdapter = new RvAdapter();
+        //rvAdapter = new RvAdapter();
 
         fetchProfilData();
         fetchUserImages();
@@ -121,14 +122,14 @@ public class Profile extends Common {
     }
 
     public void fetchUserImages() {
-        OkHttpClient cli = new OkHttpClient.Builder().build();
+        httpClient = new OkHttpClient.Builder().build();
         Request req = new Request.Builder()
-                .url(urlRecoverMeImages)
+                .url("https://api.imgur.com/3/account/me/images")
                 .method("GET", null)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + getAccesToken())
                 .header("User-agent", "DEV_epicture_2019")
                 .build();
-        cli.newCall(req).enqueue(new Callback() {
+        httpClient.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.getStackTrace();
@@ -137,17 +138,23 @@ public class Profile extends Common {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 profilRv = findViewById(R.id.profilRecyclerView);
+                JSONObject fullObject;
+                JSONArray arrayOfObject;
+                JSONObject oneImageObject;
+                List<Photo> mPictures = new ArrayList<>();
                 try {
-                    List<Photo> mPictures = new ArrayList<>();
-                    JSONObject fullObject = new JSONObject(response.body().string());
-                    JSONArray arrayOfObject = new JSONArray(fullObject.getJSONArray("data"));
-                    JSONObject oneImageObject;
+                    fullObject = new JSONObject(response.body().string());
+                    arrayOfObject = fullObject.getJSONArray("data");
 
+                    Log.d("TAG", "ARRAY LENGTH : " + arrayOfObject.length());
                     for (int j = 0; j < arrayOfObject.length(); j++) {
+                        Log.d("FIRSTLIGNFOR", "WERE IN THE FOR ");
                         Photo photoObject = new Photo();
                         oneImageObject = arrayOfObject.getJSONObject(j);
                         photoObject.id = oneImageObject.getString("id");
                         mPictures.add(photoObject);
+                        Log.d("TAG", "MyImagesProfile: " + photoObject.id);
+                        Log.d("mPictures", "mpitcures size : " + mPictures.size());
                     }
                     runOnUiThread(() -> renderGridLayout(mPictures, profilRv));
                 } catch (JSONException e) {
@@ -157,10 +164,12 @@ public class Profile extends Common {
         });
     }
 
-    public void renderGridLayout(List<Photo> pics, RecyclerView profilRv)
+    public void renderGridLayout(final List<Photo> pics, RecyclerView profilRv)
     {
+        Log.d("mPictures", "mpitcures size : " + pics.size());
         profilRv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
-        rvProfilAdapter = new RecyclerView.Adapter<ProfilView>() {
+        Log.d("mPictures", "mpitcures size : " + pics.size());
+        RecyclerView.Adapter<ProfilView> rvProfilAdapter = new RecyclerView.Adapter<ProfilView>() {
             @NonNull
             @Override
             public ProfilView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -172,7 +181,7 @@ public class Profile extends Common {
             @Override
             public void onBindViewHolder(@NonNull ProfilView holder, int position)
             {
-                String requestUrl = "https://api.imgur.com/" + pics.get(position).id + ".jpg";
+                String requestUrl = "https://i.imgur.com/" + pics.get(position).id + ".jpg";
                 Picasso.get().load(requestUrl).into(holder.picture);
                 holder.picture.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -181,7 +190,6 @@ public class Profile extends Common {
                     }
                 });
             }
-
             @Override
             public int getItemCount() {return 0;}
         };
