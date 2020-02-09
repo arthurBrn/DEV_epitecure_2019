@@ -99,19 +99,19 @@ public class Details extends AppCompatActivity {
                 Log.d("TAG", "onBindViewHolder: " + debug);
                 if (images.get(position).favorite == true) {
                     holder.is_fav = 1;
-                    checkHeart(holder);
+                    new Adapter().checkHeart(holder);
                 } else {
                     holder.is_fav = 0;
-                    uncheckHeart(holder);
+                    new Adapter().uncheckHeart(holder);
                 }
                 holder.favBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
-                            checkHeart(holder);
+                            new Adapter().checkHeart(holder);
                             new ApiHandler().addAFavorite(images.get(position).id, "image", accessToken);
                         } else if (holder.is_fav == 1) {
-                            uncheckHeart(holder);
+                            new Adapter().uncheckHeart(holder);
                             new ApiHandler().addAFavorite(images.get(position).id, "image", accessToken);
                         }
                     }
@@ -126,15 +126,4 @@ public class Details extends AppCompatActivity {
         };
         rv.setAdapter(adapter);
     }
-    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
-        holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-        holder.is_fav = 1;
-    }
-
-    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
-        holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-        holder.is_fav = 0;
-    }
-
-
 }

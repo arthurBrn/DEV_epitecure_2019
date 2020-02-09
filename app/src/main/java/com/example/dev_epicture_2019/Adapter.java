@@ -5,6 +5,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class Adapter {
@@ -18,4 +19,15 @@ public class Adapter {
             super(itemView);
         }
     }
+
+    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
+        holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+        holder.is_fav = 1;
+    }
+
+    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
+        holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        holder.is_fav = 0;
+    }
+
 }

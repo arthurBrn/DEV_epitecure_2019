@@ -93,10 +93,10 @@ public class Home extends Common {
                 holder.title.setText(photos.get(position).title);
                 if (photos.get(position).favorite == true) {
                     holder.is_fav = 1;
-                    checkHeart(holder);
+                    new Adapter().checkHeart(holder);
                 } else {
                     holder.is_fav = 0;
-                    uncheckHeart(holder);
+                    new Adapter().uncheckHeart(holder);
                 }
                 holder.photo.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -114,10 +114,10 @@ public class Home extends Common {
                     @Override
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
-                            checkHeart(holder);
+                            new Adapter().checkHeart(holder);
                             new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, getAccesToken());
                         } else if (holder.is_fav == 1) {
-                            uncheckHeart(holder);
+                            new Adapter().uncheckHeart(holder);
                             new ApiHandler().addAFavorite(photos.get(position).id, photos.get(position).type, getAccesToken());
                         }
                     }
@@ -129,17 +129,6 @@ public class Home extends Common {
             }
         };
         rv.setAdapter(adapter);
-    }
-
-
-    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
-        holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
-        holder.is_fav = 1;
-    }
-
-    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
-        holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-        holder.is_fav = 0;
     }
 
     public void click_fav(View view) {
