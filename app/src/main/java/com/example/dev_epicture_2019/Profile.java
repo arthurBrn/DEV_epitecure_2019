@@ -1,19 +1,15 @@
 package com.example.dev_epicture_2019;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,10 +39,10 @@ public class Profile extends Common {
     ImageView useravatar;
     TextView username;
     TextView userbio;
-    TextView userrep;
     UserFactory usr;
     PictureFactory pic;
     RecyclerView profilRv;
+    ApiHandler apiHandler;
 
 
     // Inner class serving of ViewHolder
@@ -69,6 +65,7 @@ public class Profile extends Common {
         overridePendingTransition(0, 0);
 
         USER_TOKEN = getAccesToken();
+        apiHandler = new ApiHandler();
         useravatar = findViewById(R.id.idUserImage);
         username = findViewById(R.id.idUserName);
         userbio = findViewById(R.id.idUserBio);
@@ -79,21 +76,10 @@ public class Profile extends Common {
         fetchUserImages();
     }
 
-    public Request buildGetRequest(String userInfo)
-    {
-        Request request = new Request.Builder()
-                .url(userInfo)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + USER_TOKEN)
-                .header("User-agent", "DEV_epicture_2019")
-                .build();
-        return (request);
-    }
-
     public void fetchUserDataForProfilHeader()
     {
         httpClient = new OkHttpClient.Builder().build();
-        Request request = buildGetRequest(USER_INFO_REQUEST);
+        Request request = apiHandler.buildGetRequest(USER_INFO_REQUEST, USER_TOKEN);
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -126,7 +112,7 @@ public class Profile extends Common {
 
     public void fetchUserImages() {
         httpClient = new OkHttpClient.Builder().build();
-        Request request = buildGetRequest(USER_IMAGES_REQUEST);
+        Request request = apiHandler.buildGetRequest(USER_IMAGES_REQUEST, USER_TOKEN);
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

@@ -13,49 +13,44 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Add extends Common {
-
+    final String AB_TITLE = "Upload a picture";
+    final String AB_TAKE_PICTURE = "Take a picture";
+    final String AB_CHOSE_GALLERY = "Chose from gallery";
+    final String AB_CANCEL = "Cancel";
+    final String UPLOAD_SUCCESS = "Uploaded";
+    final String URL_UPLOAD = "https://api.imgur.com/3/upload";
     final int REQUEST_PICTURE_CAMERA = 1;
     final int REQUEST_PICTURE_GALLERY = 2;
-    // Image view containing the user picture to upload
+    ApiHandler apiHandler;
     ImageView IDProf;
-    // The button "browse" or "upload"
     Button btnUpload;
-    // user access token
     String userAccessToken;
-    // Used in turnRecoveredImageInBitman
     Bitmap mbitmap;
-    // String containing image on format 64 byte
-    String pictureTurnedIn64Format = "";
-    Uri imageUri;
     EditText descriptionUploadFile;
     String someText;
     ProgressBar uploadProgress;
     final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpg");
     File sourceFile;
+    boolean uploadedButtonState = false;
 
     /**
      * @param savedInstanceState
@@ -68,6 +63,7 @@ public class Add extends Common {
         Common.changeActivity(navigationBar, 2, getApplicationContext());
         overridePendingTransition(0, 0);
 
+        apiHandler = new ApiHandler();
         IDProf = findViewById(R.id.IdProf);
         btnUpload = findViewById(R.id.uploadBtn);
         userAccessToken = getAccesToken();
@@ -78,52 +74,37 @@ public class Add extends Common {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                generateAlertBox();
+                if (uploadedButtonState == false) {
+                    uploadedButtonState = true;
+                    generateAlertBox();
+                }
             }
         });
     }
 
     public void generateAlertBox() {
-        final CharSequence[] options = {"Take a picture", "Take picture from gallery", "Cancel"};
+        final CharSequence[] options = {AB_TAKE_PICTURE, AB_CHOSE_GALLERY, AB_CANCEL};
         AlertDialog.Builder builderAlert = new AlertDialog.Builder(Add.this);
-        builderAlert.setTitle("Add a picture");
+        builderAlert.setTitle(AB_TITLE);
         builderAlert.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (options[which].equals("Take a picture")) {
+                if (options[which].equals(AB_TAKE_PICTURE)) {
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (takePictureIntent.resolveActivity(getPackageManager()) != null)
                         startActivityForResult(takePictureIntent, REQUEST_PICTURE_CAMERA);
                 }
-                if (options[which].equals("Take picture from gallery")) {
+                if (options[which].equals(AB_CHOSE_GALLERY)) {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                     startActivityForResult(intent, REQUEST_PICTURE_GALLERY);
                 }
-                if (options[which].equals("Cancel"))
+                if (options[which].equals(AB_CANCEL))
                     dialog.dismiss();
             }
         });
         builderAlert.show();
+        uploadedButtonState = true;
     }
-
-
-    public String getImageFullPath(Context context, Uri contentUri)
-    {
-        String str = "";
-        Cursor cursor = null;
-
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            str = cursor.getString(column_index);
-        } catch (Exception e) {
-            e.getStackTrace();
-        }
-        return (str);
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -142,9 +123,7 @@ public class Add extends Common {
                 cleanedPath = getImageFullPath(getApplicationContext(), data.getData());
             }
 
-
             sourceFile = new File(cleanedPath);
-
             descriptionUploadFile.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -163,10 +142,32 @@ public class Add extends Common {
             btnUpload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startAsyncTask();
+                    if (uploadedButtonState == true) {
+                        uploadedButtonState = false;
+                        startAsyncTask();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "nop", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
+    }
+
+    public String getImageFullPath(Context context, Uri contentUri)
+    {
+        String str = "";
+        Cursor cursor = null;
+
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            str = cursor.getString(column_index);
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+        return (str);
     }
 
     public Uri getImageUri(Bitmap imageBitmap)
@@ -196,18 +197,10 @@ public class Add extends Common {
         protected String doInBackground(File... files) {
             if (someText.isEmpty())
                 someText=" ";
-            Log.d("SOURCEFILE","SOURCEFILE " + sourceFile);
             OkHttpClient cli = new OkHttpClient.Builder().build();
-            RequestBody body = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("image", someText, RequestBody.create(sourceFile, MEDIA_TYPE_JPG))
-                    .build();
-            Request req = new Request.Builder()
-                    .url("https://api.imgur.com/3/upload")
-                    .method("POST", body)
-                    .header("Authorization", "Bearer " + getAccesToken())
-                    .header("User-agent", "DEV_epicture_2019")
-                    .build();
+
+            RequestBody body = apiHandler.buildPostRequestBody(someText, MEDIA_TYPE_JPG, sourceFile);
+            Request req = apiHandler.buildGetRequest(URL_UPLOAD, getAccesToken());
             try {
                 cli.newCall(req).enqueue(new Callback() {
                     @Override
@@ -224,7 +217,7 @@ public class Add extends Common {
             } catch (Exception e) {
                 e.getStackTrace();
             }
-            return ("Uploaded successfully");
+            return (UPLOAD_SUCCESS);
         }
 
         @Override
@@ -232,8 +225,6 @@ public class Add extends Common {
             super.onProgressUpdate(values);
             uploadProgress.setProgress(values[0]);
         }
-
-
 
         @Override
         protected void onPostExecute(String s) {
@@ -254,31 +245,6 @@ public class Add extends Common {
     public void changeUploadLayout() {
         btnUpload.setText("Upload");
         IDProf.setBackgroundColor(getResources().getColor(R.color.white));
-    }
-
-    /**
-     * @param data
-     * @param bitmap
-     * @return
-     */
-    public Bitmap turnImageRecoveredIntoBitmap(Intent data, Bitmap bitmap) {
-        try {
-            mbitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-        return (mbitmap);
-    }
-
-    /**
-     * @param objBitmap
-     * @return
-     */
-    public String turnBitMapObjectIntoBase64String(Bitmap objBitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        objBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
-        byte[] someByte = baos.toByteArray();
-        String someStr = Base64.encodeToString(someByte, Base64.DEFAULT);
-        return (someStr);
+        uploadedButtonState = false;
     }
 }
