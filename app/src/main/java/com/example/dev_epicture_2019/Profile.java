@@ -1,17 +1,27 @@
 package com.example.dev_epicture_2019;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Callback;
@@ -21,7 +31,6 @@ import org.json.JSONObject;
 
 public class Profile extends Common {
 
-    RecyclerView profilRV;
     final String accountRequestUrl = "https://api.imgur.com/3/account/me";
     String urlRecoverMeImages = "https://api.imgur.com/3/account/me/images";
     OkHttpClient httpClient;
@@ -32,6 +41,17 @@ public class Profile extends Common {
     TextView userrep;
     TextView imagesDescription;
     UserFactory usr;
+    RecyclerView profilRv;
+
+
+    private static class ProfilVh extends RecyclerView.ViewHolder
+    {
+        ImageView profilPictures;
+        TextView pictureTitle;
+
+        public ProfilVh(View itemView){ super(itemView); }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +67,7 @@ public class Profile extends Common {
         userrep = findViewById(R.id.idUserReputation);
         token = getAccesToken();
         username = findViewById(R.id.idUserName);
+        profilRv = findViewById(R.id.profilRecyclerView);
 
         fetchProfilData();
         fetchUserImages();
@@ -109,30 +130,68 @@ public class Profile extends Common {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                profilRv = findViewById(R.id.profilRecyclerView);
+                JSONObject data;
+                JSONArray items;
+                List<Photo> mphotos = new ArrayList<>();
                 try {
-                    JSONObject data = new JSONObject(response.body().string());
+                    data = new JSONObject(response.body().string());
                     username.setText(String.valueOf(data));
-                    // JSONObject sndobj = data.getJSONObject("data");
-                    // String st = sndobj.getString("url");
-                    // usr = UserFactory.createUser(sndobj.getString("url"), sndobj.getString("bio"), sndobj.getString("avatar"), sndobj.getString("reputation"));
-                    /*runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            username.setText(usr.getUserUrl());
-                            if (usr.getUserBio() != null)
-                                userbio.setText(usr.getUserBio());
-                            else
-                                userbio.setText(" ");
-                            userrep.setText(usr.getUserReputation());
-                            Picasso.get().load(usr.getUserAvatar()).centerCrop() .resize(300,300).into(useravatar);
-                        }
-                    });*/
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    items = data.getJSONArray("data");
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        Photo thisPic = new Photo();
+                        thisPic.id = item.getString("id");
+                        thisPic.title = item.getString("title");
+                        thisPic.description = item.getString("description");
+                        //thisPic.favorite = item.getBoolean("favorite");
+                        mphotos.add(thisPic);
+                    }
+                    runOnUiThread(() -> displayPicMethod(mphotos, profilRv));
+                } catch(JSONException e) {
+                    e.getMessage();
+                    e.getStackTrace();
                 }
             }
         });
     }
+
+    private void displayPicMethod(final List<Photo> photos, RecyclerView profilRv) {
+        profilRv.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter<ProfilVh> adapter = new RecyclerView.Adapter<ProfilVh>() {
+            @NonNull
+            @Override
+            public ProfilVh onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                ProfilVh vh = new ProfilVh(getLayoutInflater().inflate(R.layout.card, null));
+                vh.profilPictures = vh.itemView.findViewById(R.id.image);
+                vh.pictureTitle = vh.itemView.findViewById(R.id.title);
+                return vh;
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull ProfilVh holder    , int position) {
+                String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
+                Picasso.get().load(path).into(holder.profilPictures);
+                holder.pictureTitle.setText(photos.get(position).title);
+                /*holder.profilPictures.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setIndex(position);
+                        Intent intent = new Intent(getApplicationContext(), Details.class);
+                        intent.putExtra("galeryId", photos.get(position).id);
+                        startActivity(intent);
+                    }
+                });*/
+            }
+            @Override
+            public int getItemCount() {
+                return photos.size();
+            }
+        };
+        profilRv.setAdapter(adapter);
+    }
+
+
 
 
     /* public void initialize()

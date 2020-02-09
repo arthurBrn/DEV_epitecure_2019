@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ public class Home extends Common {
     private OkHttpClient httpClient;
     private String url = "https://api.imgur.com/3/gallery/user/viral";
     private int index;
+    RecyclerView rv;
 
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
@@ -56,6 +58,7 @@ public class Home extends Common {
         Common.changeActivity(navigationBar, 0, getApplicationContext());
         overridePendingTransition(0, 0);
         this.index = 1;
+        rv = findViewById(R.id.recyclerView);
         fetchData();
     }
 
@@ -94,7 +97,7 @@ public class Home extends Common {
                         photo.favorite = item.getBoolean("favorite");
                         photos.add(photo);
                     }
-                    runOnUiThread(() -> render(photos));
+                    runOnUiThread(() -> render(photos, rv));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -102,8 +105,8 @@ public class Home extends Common {
         });
     }
 
-    private void render(final List<Photo> photos) {
-        RecyclerView rv = findViewById(R.id.recyclerView);
+    private void render(final List<Photo> photos, RecyclerView rv) {
+        //RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.Adapter<PhotoVH> adapter = new RecyclerView.Adapter<PhotoVH>() {
             @NonNull

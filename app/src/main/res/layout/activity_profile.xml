@@ -151,6 +151,14 @@
 
     </RelativeLayout>-->
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/profilRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pointsPicture"
+        android:layout_above="@+id/navigationBar"
+        android:scrollbars="vertical" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
