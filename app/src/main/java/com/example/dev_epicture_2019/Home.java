@@ -174,33 +174,26 @@ public class Home extends Common {
         fetchData();
     }
 
-    public void click_card(View view) {
-        createIntent(this, Details.class);
-    }
-
     public void addAFavorite(String imageHash, String mtype) {
         String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                httpClient = new OkHttpClient.Builder().build();
-                RequestBody body = RequestBody.create(null, "");
-                Request request = new Request.Builder()
-                        .url(url)
-                        .method("POST", body)
-                        .header("Authorization", "Bearer " + accesToken)
-                        .build();
-                httpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
+        runOnUiThread(() -> {
+            httpClient = new OkHttpClient.Builder().build();
+            RequestBody body = RequestBody.create(null, "");
+            Request request = new Request.Builder()
+                    .url(url)
+                    .method("POST", body)
+                    .header("Authorization", "Bearer " + accesToken)
+                    .build();
+            httpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
 
-                    @Override
-                    public void onResponse(Call call, Response response_fav) throws IOException {
-                    }
-                });
-            }
+                @Override
+                public void onResponse(Call call, Response response_fav) throws IOException {
+                }
+            });
         });
     }
 

@@ -4,35 +4,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-<<<<<<< HEAD
-=======
-import android.widget.GridLayout;
-import android.widget.ImageButton;
->>>>>>> 424a63ffa6d781263a703db2e979d8ef822968ee
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Callback;
 import okhttp3.Call;
 import okhttp3.Response;
-
 import org.json.JSONObject;
 
 public class Profile extends Common {
@@ -52,8 +38,6 @@ public class Profile extends Common {
     private static class PhotoVH extends RecyclerView.ViewHolder {
         ImageView photo;
         TextView title;
-        ImageButton favBtn;
-        int is_fav = 0;
 
         public PhotoVH(View itemView) {
             super(itemView);
@@ -79,19 +63,6 @@ public class Profile extends Common {
         fetchUserImages();
     }
 
-<<<<<<< HEAD
-=======
-    public Request buildGetRequest(String userInfo)
-    {
-        Request request = new Request.Builder()
-                .url(userInfo)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + USER_TOKEN)
-                .build();
-        return (request);
-    }
-
->>>>>>> 424a63ffa6d781263a703db2e979d8ef822968ee
     public void fetchUserDataForProfilHeader()
     {
         httpClient = new OkHttpClient.Builder().build();
@@ -108,16 +79,13 @@ public class Profile extends Common {
                     JSONObject data = new JSONObject(response.body().string());
                     JSONObject sndobj = data.getJSONObject("data");
                     usr = UserFactory.createUser(sndobj.getString("url"), sndobj.getString("bio"), sndobj.getString("avatar"), sndobj.getString("reputation"));
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            username.setText(usr.getUserUrl());
-                            if (usr.getUserBio().isEmpty())
-                                userbio.setVisibility(View.INVISIBLE);
-                            else
-                                userbio.setText(usr.getUserBio());
-                            Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
-                        }
+                    runOnUiThread(() -> {
+                        username.setText(usr.getUserUrl());
+                        if (usr.getUserBio().isEmpty())
+                            userbio.setVisibility(View.INVISIBLE);
+                        else
+                            userbio.setText(usr.getUserBio());
+                        Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
                     });
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -137,24 +105,11 @@ public class Profile extends Common {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                JSONObject fullObject;
-                JSONArray arrayOfObject;
-                JSONObject oneImageObject;
-                List<Photo> mPictures = new ArrayList<>();
                 try {
-                    fullObject = new JSONObject(response.body().string());
-                    arrayOfObject = fullObject.getJSONArray("data");
-                    for (int j = 0; j < arrayOfObject.length(); j++) {
-                        Photo photoObject = new Photo();
-                        //pic = PictureFactory.createUser(oneImageObject.getString("id"), oneImageObject.getString("title"), oneImageObject.getString("description"), oneImageObject.getString("favorite"));
-                        oneImageObject = arrayOfObject.getJSONObject(j);
-                        photoObject.id = oneImageObject.getString("id");
-                        photoObject.title = oneImageObject.getString("title");
-                        mPictures.add(photoObject);
-                    }
-                    runOnUiThread(() -> renderGridLayout(mPictures));
+                    final List<Photo> photos = new Parser().getData(response);
+                    runOnUiThread(() -> renderGridLayout(photos));
                 } catch (JSONException e) {
-                    e.getStackTrace();
+                    e.printStackTrace();
                 }
             }
         });
@@ -162,8 +117,6 @@ public class Profile extends Common {
 
     private void renderGridLayout(final List<Photo> pics)
     {
-        String debug = String.valueOf(pics.size());
-        Log.d("TAG", "renderGridLayout: " + debug);
         RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.Adapter<Profile.PhotoVH> adapter = new RecyclerView.Adapter<Profile.PhotoVH>() {
@@ -191,7 +144,6 @@ public class Profile extends Common {
         };
         rv.setAdapter(adapter);
     }
-
 }
 
 

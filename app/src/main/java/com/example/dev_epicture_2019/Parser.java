@@ -20,21 +20,25 @@ public class Parser {
         try {
             data = new JSONObject((response.body().string()));
             items = data.getJSONArray("data");
+
             for (int i = 0; i < items.length(); i++) {
                 try {
                     JSONObject item = items.getJSONObject(i);
                     Photo photo = new Photo();
-                    if (item.getBoolean("is_album")) {
-                        photo.link = item.getString("cover");
-                        photo.type = "album";
-                    } else {
-                        photo.link = item.getString("id");
-                        photo.type = "image";
+                    if (item.has("is_album")) {
+                        if (item.getBoolean("is_album")) {
+                            photo.link = item.getString("cover");
+                            photo.type = "album";
+                        } else {
+                            photo.link = item.getString("id");
+                            photo.type = "image";
+                        }
                     }
                     photo.id = item.getString("id");
                     photo.title = item.getString("title");
                     photo.description = item.getString("description");
                     photo.favorite = item.getBoolean("favorite");
+
                     photos.add(photo);
                 } catch (JSONException e) {
                     e.printStackTrace();
