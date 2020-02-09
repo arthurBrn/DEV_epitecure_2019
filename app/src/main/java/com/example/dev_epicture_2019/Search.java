@@ -27,23 +27,13 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Search extends Common {
 
     private OkHttpClient httpClient;
     private SearchView sv;
-
-    private static class PhotoVH extends RecyclerView.ViewHolder {
-        ImageView photo;
-        TextView title;
-        ImageButton favBtn;
-        int is_fav = 0;
-
-        public PhotoVH(View itemView) {
-            super(itemView);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +60,9 @@ public class Search extends Common {
     }
 
     private void fetchData(String search) {
+        String url = "https://api.imgur.com/3/gallery/search?q=" + search;
         httpClient = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/gallery/search?q=" + search)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + accesToken)
-                .build();
+        Request request = new ApiHandler().buildGetRequest(url, getAccesToken());
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -93,16 +80,17 @@ public class Search extends Common {
                 }
             }
         });
+
     }
 
     private void render(final List<Photo> photos) {
         RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<Search.PhotoVH> adapter = new RecyclerView.Adapter<Search.PhotoVH>() {
+        RecyclerView.Adapter<Adapter.PhotoVH> adapter = new RecyclerView.Adapter<Adapter.PhotoVH>() {
             @NonNull
             @Override
-            public Search.PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                Search.PhotoVH vh = new Search.PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
+            public Adapter.PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                Adapter.PhotoVH vh = new Adapter.PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
                 vh.favBtn = vh.itemView.findViewById(R.id.favBtn);
@@ -110,7 +98,7 @@ public class Search extends Common {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull Search.PhotoVH holder, int position) {
+            public void onBindViewHolder(@NonNull Adapter.PhotoVH holder, int position) {
                 String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
@@ -155,12 +143,12 @@ public class Search extends Common {
         };
         rv.setAdapter(adapter);
     }
-    public void checkHeart(@NonNull Search.PhotoVH holder) {
+    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
         holder.is_fav = 1;
     }
 
-    public void uncheckHeart(@NonNull Search.PhotoVH holder) {
+    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
         holder.is_fav = 0;
     }

@@ -10,9 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -34,16 +31,6 @@ public class Details extends AppCompatActivity {
     private OkHttpClient httpClient;
     private String accessToken;
 
-    private static class ImageVH extends RecyclerView.ViewHolder {
-        ImageView photo;
-        TextView title;
-        ImageButton favBtn;
-        int is_fav = 0;
-
-        public ImageVH(View itemView) {
-            super(itemView);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +42,9 @@ public class Details extends AppCompatActivity {
         showDetails(id);
     }
     private void showDetails(String img_id) {
+        String url = "https://api.imgur.com/3/gallery/" + img_id;
+        Request request = new ApiHandler().buildGetRequest(url, accessToken);
         httpClient = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/gallery/" + img_id)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + accessToken)
-                .build();
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -74,9 +58,7 @@ public class Details extends AppCompatActivity {
                     JSONObject res = new JSONObject(response.body().string());
                     JSONObject data = res.getJSONObject("data");
                     final Gallery gallery = new Parser().getGallery(data);
-                    int nb = gallery.images_count;
-                    images = getImageList(data);
-                    final List<Image> finalListImage = images;
+                    final List<Image> finalListImage = getImageList(data);
                     runOnUiThread(() -> {
                         render(finalListImage);
                     });
@@ -94,11 +76,11 @@ public class Details extends AppCompatActivity {
     private void render(final List<Image> images) {
         RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<ImageVH> adapter = new RecyclerView.Adapter<ImageVH>() {
+        RecyclerView.Adapter<Adapter.PhotoVH> adapter = new RecyclerView.Adapter<Adapter.PhotoVH>() {
             @NonNull
             @Override
-            public ImageVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                ImageVH vh = new ImageVH(getLayoutInflater().inflate(R.layout.card, null));
+            public Adapter.PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                Adapter.PhotoVH vh = new Adapter.PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
                 vh.favBtn = vh.itemView.findViewById(R.id.favBtn);
@@ -106,7 +88,7 @@ public class Details extends AppCompatActivity {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ImageVH holder, int position) {
+            public void onBindViewHolder(@NonNull Adapter.PhotoVH holder, int position) {
 
                 String path = "https://i.imgur.com/" + images.get(position).id + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
@@ -144,12 +126,12 @@ public class Details extends AppCompatActivity {
         };
         rv.setAdapter(adapter);
     }
-    public void checkHeart(@NonNull ImageVH holder) {
+    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
         holder.is_fav = 1;
     }
 
-    public void uncheckHeart(@NonNull ImageVH holder) {
+    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
         holder.is_fav = 0;
     }

@@ -39,17 +39,6 @@ public class Home extends Common {
     private String url = "https://api.imgur.com/3/gallery/user/viral";
     private int index;
 
-    private static class PhotoVH extends RecyclerView.ViewHolder {
-        ImageView photo;
-        TextView title;
-        ImageButton favBtn;
-        int is_fav = 0;
-
-        public PhotoVH(View itemView) {
-            super(itemView);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,11 +52,7 @@ public class Home extends Common {
 
     private void fetchData() {
         httpClient = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder()
-                .url(url)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + accesToken)
-                .build();
+        Request request = new ApiHandler().buildGetRequest(url, getAccesToken());
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -90,11 +75,11 @@ public class Home extends Common {
     private void render(final List<Photo> photos) {
         RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<PhotoVH> adapter = new RecyclerView.Adapter<PhotoVH>() {
+        RecyclerView.Adapter<Adapter.PhotoVH> adapter = new RecyclerView.Adapter<Adapter.PhotoVH>() {
             @NonNull
             @Override
-            public PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                PhotoVH vh = new PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
+            public Adapter.PhotoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                Adapter.PhotoVH vh = new Adapter.PhotoVH(getLayoutInflater().inflate(R.layout.card, null));
                 vh.photo = vh.itemView.findViewById(R.id.image);
                 vh.title = vh.itemView.findViewById(R.id.title);
                 vh.favBtn = vh.itemView.findViewById(R.id.favBtn);
@@ -102,7 +87,7 @@ public class Home extends Common {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
+            public void onBindViewHolder(@NonNull Adapter.PhotoVH holder, int position) {
                 String path = "https://i.imgur.com/" + photos.get(position).link + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
@@ -146,12 +131,13 @@ public class Home extends Common {
         rv.setAdapter(adapter);
     }
 
-    public void checkHeart(@NonNull PhotoVH holder) {
+
+    public void checkHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
         holder.is_fav = 1;
     }
 
-    public void uncheckHeart(@NonNull PhotoVH holder) {
+    public void uncheckHeart(@NonNull Adapter.PhotoVH holder) {
         holder.favBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
         holder.is_fav = 0;
     }
@@ -178,12 +164,7 @@ public class Home extends Common {
         String url = "https://api.imgur.com/3/" + mtype + "/" + imageHash + "/favorite";
         runOnUiThread(() -> {
             httpClient = new OkHttpClient.Builder().build();
-            RequestBody body = RequestBody.create(null, "");
-            Request request = new Request.Builder()
-                    .url(url)
-                    .method("POST", body)
-                    .header("Authorization", "Bearer " + accesToken)
-                    .build();
+            Request request = new ApiHandler().buildPostFavorite(url, getAccesToken());
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -195,14 +176,6 @@ public class Home extends Common {
                 }
             });
         });
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public int getIndex() {
-        return this.index;
     }
 
     @Override

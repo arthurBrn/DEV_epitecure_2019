@@ -21,8 +21,7 @@
         <activity
             android:name=".recoverData"
             android:screenOrientation="portrait"
-            android:noHistory="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
+            android:noHistory="true">
             <intent-filter>
                 <data
                     android:host="epicture.com"
@@ -36,7 +35,6 @@
             android:name=".LoginAuthenticator"
             android:screenOrientation="portrait"
             android:noHistory="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,11 +44,9 @@
         </activity>
         <activity android:name=".Profile"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             />
         <activity android:name=".Add"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             />
         <activity android:name=".Search"
             android:screenOrientation="portrait"/>
@@ -58,24 +54,11 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".Common"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             />
         <activity android:name=".Details"
             android:screenOrientation="portrait"
             android:parentActivityName=".Home"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             />
     </application>
 
 </manifest>
-
-
-<!-- 
-android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            />
-        <activity android:name=".Home"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            />
-
--->

@@ -1,7 +1,6 @@
 package com.example.dev_epicture_2019;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -85,7 +84,6 @@ public class Profile extends Common {
                             userbio.setVisibility(View.INVISIBLE);
                         else
                             userbio.setText(usr.getUserBio());
-                        Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
                     });
                 } catch (JSONException e) {
                     e.printStackTrace();

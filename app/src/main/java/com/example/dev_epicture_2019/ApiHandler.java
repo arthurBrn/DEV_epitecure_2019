@@ -1,11 +1,21 @@
 package com.example.dev_epicture_2019;
 
-import java.io.File;
+import android.content.Context;
 
+import org.json.JSONException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ApiHandler {
 
@@ -28,5 +38,15 @@ public class ApiHandler {
         return (body);
     }
 
+    public Request buildPostFavorite(String url, String accesToken)
+    {
+        RequestBody body = RequestBody.create(null, "");
+        Request request = new Request.Builder()
+                .url(url)
+                .method("POST", body)
+                .header("Authorization", "Bearer " + accesToken)
+                .build();
+        return request;
+    }
 
 }

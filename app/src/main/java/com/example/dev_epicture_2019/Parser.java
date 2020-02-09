@@ -65,6 +65,7 @@ public class Parser {
     }
 
     public List<Image> getImages(JSONObject data) throws IOException, JSONException {
+
         List<Image> images = new ArrayList<>();
         JSONArray img;
         if (data.has("images")) {

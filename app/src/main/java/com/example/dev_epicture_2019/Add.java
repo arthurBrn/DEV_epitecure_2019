@@ -50,7 +50,7 @@ public class Add extends Common {
     ProgressBar uploadProgress;
     final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpg");
     File sourceFile;
-    boolean uploadedButtonState = false;
+    private boolean uploadedButtonState = false;
 
     /**
      * @param savedInstanceState
@@ -103,7 +103,6 @@ public class Add extends Common {
             }
         });
         builderAlert.show();
-        uploadedButtonState = true;
     }
 
     @Override
@@ -245,6 +244,6 @@ public class Add extends Common {
     public void changeUploadLayout() {
         btnUpload.setText("Upload");
         IDProf.setBackgroundColor(getResources().getColor(R.color.white));
-        uploadedButtonState = false;
+        //uploadedButtonState = false;
     }
 }
