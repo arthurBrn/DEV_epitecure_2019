@@ -4,17 +4,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-<<<<<<< HEAD
-=======
-import android.widget.GridLayout;
 import android.widget.ImageButton;
->>>>>>> 424a63ffa6d781263a703db2e979d8ef822968ee
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -79,19 +74,6 @@ public class Profile extends Common {
         fetchUserImages();
     }
 
-<<<<<<< HEAD
-=======
-    public Request buildGetRequest(String userInfo)
-    {
-        Request request = new Request.Builder()
-                .url(userInfo)
-                .method("GET", null)
-                .header("Authorization", "Bearer " + USER_TOKEN)
-                .build();
-        return (request);
-    }
-
->>>>>>> 424a63ffa6d781263a703db2e979d8ef822968ee
     public void fetchUserDataForProfilHeader()
     {
         httpClient = new OkHttpClient.Builder().build();
@@ -113,7 +95,7 @@ public class Profile extends Common {
                         public void run() {
                             username.setText(usr.getUserUrl());
                             if (usr.getUserBio().isEmpty())
-                                userbio.setVisibility(View.INVISIBLE);
+                                userbio.setVisibility(View.GONE);
                             else
                                 userbio.setText(usr.getUserBio());
                             Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
