@@ -132,11 +132,9 @@ public class Home extends Common {
                     @Override
                     public void onClick(View v) {
                         if (holder.is_fav == 0) {
-                            Toast.makeText(getApplicationContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
                             checkHeart(holder);
                             addAFavorite(photos.get(position).id, photos.get(position).type);
                         } else if (holder.is_fav == 1) {
-                            Toast.makeText(getApplicationContext(), "Hello toast!!", Toast.LENGTH_LONG).show();
                             uncheckHeart(holder);
                             addAFavorite(photos.get(position).id, photos.get(position).type);
                         }

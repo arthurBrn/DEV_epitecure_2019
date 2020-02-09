@@ -1,5 +1,7 @@
 package com.example.dev_epicture_2019;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,10 +71,11 @@ public class Parser {
                 image.id = item.getString("id");
                 image.description = item.getString("description");
                 image.title = item.getString("title");
+                image.favorite = item.getBoolean("favorite");
+                Log.d("TAG", "getImages: " + image.id + image.title + image.title);
                 images.add(image);
             }
         }
         return images;
     }
-
 }

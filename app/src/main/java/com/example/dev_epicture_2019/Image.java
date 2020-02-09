@@ -4,4 +4,5 @@ public class Image {
     String id;
     String title;
     String description;
+    Boolean favorite;
 }
