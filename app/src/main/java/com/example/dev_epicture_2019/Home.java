@@ -120,12 +120,13 @@ public class Home extends Common {
                 holder.photo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setIndex(position);
-                        Intent intent = new Intent(getApplicationContext(), Details.class);
-                        intent.putExtra("galleryId", photos.get(position).id);
-                        intent.putExtra("photo", photos.get(position).type);
-                        intent.putExtra("accessToken", getAccesToken());
-                        startActivity(intent);
+                        if (photos.get(position).type.equals("album")) {
+                            Intent intent = new Intent(getApplicationContext(), Details.class);
+                            intent.putExtra("galleryId", photos.get(position).id);
+                            intent.putExtra("photo", photos.get(position).type);
+                            intent.putExtra("accessToken", getAccesToken());
+                            startActivity(intent);
+                        }
                     }
                 });
                 holder.favBtn.setOnClickListener(new View.OnClickListener() {
