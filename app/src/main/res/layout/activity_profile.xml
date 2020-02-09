@@ -157,6 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/pointsPicture"
         android:layout_above="@+id/navigationBar"
+        android:layout_marginRight="10dp"
         android:scrollbars="vertical" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

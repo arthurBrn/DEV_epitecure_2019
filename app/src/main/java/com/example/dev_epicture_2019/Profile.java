@@ -2,11 +2,13 @@ package com.example.dev_epicture_2019;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -18,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,7 @@ import okhttp3.Request;
 import okhttp3.Callback;
 import okhttp3.Call;
 import okhttp3.Response;
+
 import org.json.JSONObject;
 
 public class Profile extends Common {
@@ -39,20 +43,20 @@ public class Profile extends Common {
     TextView username;
     TextView userbio;
     TextView userrep;
-    TextView imagesDescription;
     UserFactory usr;
     RecyclerView profilRv;
+    RvAdapter rvAdapter;
+    RecyclerView.Adapter<ProfilView> rvProfilAdapter;
 
 
-    private static class ProfilVh extends RecyclerView.ViewHolder
-    {
-        ImageView profilPictures;
-        TextView pictureTitle;
+    public class ProfilView extends RecyclerView.ViewHolder {
+        ImageView picture;
 
-        public ProfilVh(View itemView){ super(itemView); }
+        public ProfilView(@NonNull View itemView) {
+            super(itemView);
+            picture = findViewById(R.id.profil_images_id);
+        }
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,13 +65,14 @@ public class Profile extends Common {
         Common.changeActivity(navigationBar, 3, getApplicationContext());
         overridePendingTransition(0, 0);
 
-        useravatar = (ImageView) findViewById(R.id.idUserImage);
+        useravatar = findViewById(R.id.idUserImage);
         username = findViewById(R.id.idUserName);
         userbio = findViewById(R.id.idUserBio);
         userrep = findViewById(R.id.idUserReputation);
         token = getAccesToken();
         username = findViewById(R.id.idUserName);
         profilRv = findViewById(R.id.profilRecyclerView);
+        rvAdapter = new RvAdapter();
 
         fetchProfilData();
         fetchUserImages();
@@ -105,7 +110,7 @@ public class Profile extends Common {
                             else
                                 userbio.setText(" ");
                             userrep.setText(usr.getUserReputation());
-                            Picasso.get().load(usr.getUserAvatar()).centerCrop() .resize(300,300).into(useravatar);
+                            Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
                         }
                     });
                 } catch (JSONException e) {
@@ -115,8 +120,7 @@ public class Profile extends Common {
         });
     }
 
-    public void fetchUserImages()
-    {
+    public void fetchUserImages() {
         OkHttpClient cli = new OkHttpClient.Builder().build();
         Request req = new Request.Builder()
                 .url(urlRecoverMeImages)
@@ -126,90 +130,64 @@ public class Profile extends Common {
                 .build();
         cli.newCall(req).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {e.getMessage(); e.getStackTrace();}
+            public void onFailure(Call call, IOException e) {
+                e.getStackTrace();
+            }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 profilRv = findViewById(R.id.profilRecyclerView);
-                JSONObject data;
-                JSONArray items;
-                List<Photo> mphotos = new ArrayList<>();
                 try {
-                    data = new JSONObject(response.body().string());
-                    username.setText(String.valueOf(data));
-                    items = data.getJSONArray("data");
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        Photo thisPic = new Photo();
-                        thisPic.id = item.getString("id");
-                        thisPic.title = item.getString("title");
-                        thisPic.description = item.getString("description");
-                        //thisPic.favorite = item.getBoolean("favorite");
-                        mphotos.add(thisPic);
+                    List<Photo> mPictures = new ArrayList<>();
+                    JSONObject fullObject = new JSONObject(response.body().string());
+                    JSONArray arrayOfObject = new JSONArray(fullObject.getJSONArray("data"));
+                    JSONObject oneImageObject;
+
+                    for (int j = 0; j < arrayOfObject.length(); j++) {
+                        Photo photoObject = new Photo();
+                        oneImageObject = arrayOfObject.getJSONObject(j);
+                        photoObject.id = oneImageObject.getString("id");
+                        mPictures.add(photoObject);
                     }
-                    runOnUiThread(() -> displayPicMethod(mphotos, profilRv));
-                } catch(JSONException e) {
-                    e.getMessage();
+                    runOnUiThread(() -> renderGridLayout(mPictures, profilRv));
+                } catch (JSONException e) {
                     e.getStackTrace();
                 }
             }
         });
     }
 
-    private void displayPicMethod(final List<Photo> photos, RecyclerView profilRv) {
-        profilRv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<ProfilVh> adapter = new RecyclerView.Adapter<ProfilVh>() {
+    public void renderGridLayout(List<Photo> pics, RecyclerView profilRv)
+    {
+        profilRv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
+        rvProfilAdapter = new RecyclerView.Adapter<ProfilView>() {
             @NonNull
             @Override
-            public ProfilVh onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                ProfilVh vh = new ProfilVh(getLayoutInflater().inflate(R.layout.card, null));
-                vh.profilPictures = vh.itemView.findViewById(R.id.image);
-                vh.pictureTitle = vh.itemView.findViewById(R.id.title);
-                return vh;
+            public ProfilView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                ProfilView pv = new ProfilView(getLayoutInflater().inflate(R.layout.profil_card, null));
+                pv.picture = pv.itemView.findViewById(R.id.profil_images_id);
+                return (pv);
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ProfilVh holder    , int position) {
-                String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
-                Picasso.get().load(path).into(holder.profilPictures);
-                holder.pictureTitle.setText(photos.get(position).title);
-                /*holder.profilPictures.setOnClickListener(new View.OnClickListener() {
+            public void onBindViewHolder(@NonNull ProfilView holder, int position)
+            {
+                String requestUrl = "https://api.imgur.com/" + pics.get(position).id + ".jpg";
+                Picasso.get().load(requestUrl).into(holder.picture);
+                holder.picture.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setIndex(position);
-                        Intent intent = new Intent(getApplicationContext(), Details.class);
-                        intent.putExtra("galeryId", photos.get(position).id);
-                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "image info", Toast.LENGTH_LONG).show();
                     }
-                });*/
+                });
             }
+
             @Override
-            public int getItemCount() {
-                return photos.size();
-            }
+            public int getItemCount() {return 0;}
         };
-        profilRv.setAdapter(adapter);
+        profilRv.setAdapter(rvProfilAdapter);
     }
 
-
-
-
-    /* public void initialize()
-    {
-        profilRV = findViewById(R.id.rvProfil);
-        // Initialize a gridLayoutManager
-        GridLayoutManager glm = new GridLayoutManager(this, 2);
-        profilRV.setLayoutManager(glm);
-    } */
-
-    public void setProfilHeader(UserFactory usr) {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                username.setText(usr.getUserUrl());
-            }
-        });
-    }
 }
 
 

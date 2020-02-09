@@ -3,6 +3,8 @@ package com.example.dev_epicture_2019;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,10 +15,14 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ProfilView>
     @Override
     public ProfilView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        // We're gonna create a view here
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profil_card, parent, false);
 
-        return new ProfilView(view);
+        // On crée un layout inflateur
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        // On crée notre vue
+        View view = inflater.inflate(R.layout.profil_card, parent, false);
+
+        ProfilView pv = new ProfilView(view);
+        return (pv);
     }
 
     @Override
@@ -26,14 +32,20 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ProfilView>
 
     @Override
     public int getItemCount() {
-        return 0;
+        return 20;
     }
 
     public class ProfilView extends RecyclerView.ViewHolder
     {
+        // On récupère nos éléments ici
+        TextView pictureTitle;
+        ImageView picture;
 
-        public ProfilView(@NonNull View itemView) {
+        public ProfilView(@NonNull View itemView)
+        {
             super(itemView);
+            picture = itemView.findViewById(R.id.profil_images_id);
+            //pictureTitle = itemView.findViewById(R.id.profil_image_description);
         }
     }
 

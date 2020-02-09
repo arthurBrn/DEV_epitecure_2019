@@ -120,7 +120,7 @@ public class Home extends Common {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull PhotoVH holder    , int position) {
+            public void onBindViewHolder(@NonNull PhotoVH holder, int position) {
                 String path = "https://i.imgur.com/" + photos.get(position).id + ".jpg";
                 Picasso.get().load(path).into(holder.photo);
                 holder.title.setText(photos.get(position).title);
