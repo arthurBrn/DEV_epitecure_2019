@@ -1,8 +1,13 @@
 package com.example.dev_epicture_2019;
 
 import android.os.Bundle;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
@@ -16,13 +21,16 @@ import org.json.JSONObject;
 
 public class Profile extends Common {
 
+    RecyclerView profilRV;
     final String accountRequestUrl = "https://api.imgur.com/3/account/me";
+    String urlRecoverMeImages = "https://api.imgur.com/3/account/me/images";
     OkHttpClient httpClient;
     String token;
     ImageView useravatar;
     TextView username;
     TextView userbio;
     TextView userrep;
+    TextView imagesDescription;
     UserFactory usr;
 
     @Override
@@ -41,6 +49,7 @@ public class Profile extends Common {
         username = findViewById(R.id.idUserName);
 
         fetchProfilData();
+        fetchUserImages();
     }
 
     public void fetchProfilData() {
@@ -85,6 +94,54 @@ public class Profile extends Common {
         });
     }
 
+    public void fetchUserImages()
+    {
+        OkHttpClient cli = new OkHttpClient.Builder().build();
+        Request req = new Request.Builder()
+                .url(urlRecoverMeImages)
+                .method("GET", null)
+                .header("Authorization", "Bearer " + token)
+                .header("User-agent", "DEV_epicture_2019")
+                .build();
+        cli.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {e.getMessage(); e.getStackTrace();}
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject data = new JSONObject(response.body().string());
+                    username.setText(String.valueOf(data));
+                    // JSONObject sndobj = data.getJSONObject("data");
+                    // String st = sndobj.getString("url");
+                    // usr = UserFactory.createUser(sndobj.getString("url"), sndobj.getString("bio"), sndobj.getString("avatar"), sndobj.getString("reputation"));
+                    /*runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            username.setText(usr.getUserUrl());
+                            if (usr.getUserBio() != null)
+                                userbio.setText(usr.getUserBio());
+                            else
+                                userbio.setText(" ");
+                            userrep.setText(usr.getUserReputation());
+                            Picasso.get().load(usr.getUserAvatar()).centerCrop() .resize(300,300).into(useravatar);
+                        }
+                    });*/
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public void initialize()
+    {
+        profilRV = findViewById(R.id.rvProfil);
+        // Initialize a gridLayoutManager
+        GridLayoutManager glm = new GridLayoutManager(this, 2);
+        profilRV.setLayoutManager(glm);
+    }
 
     public void setProfilHeader(UserFactory usr) {
         this.runOnUiThread(new Runnable() {

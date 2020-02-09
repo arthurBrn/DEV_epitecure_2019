@@ -8,16 +8,18 @@
 
     <Button
         android:id="@+id/con_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
         android:paddingHorizontal="80dp"
         android:paddingVertical="25dp"
-        android:text="Button"
+        android:text="Login with imgur"
+        android:textSize="15sp"
         android:layout_centerInParent="true"
-        android:background="#0A32AB"
-        android:textColor="@android:color/white"/>
+        android:background="@drawable/rounded_login_btn"
+        android:textColor="@android:color/white"
+        />
 
-    <TextView
+    <!-- <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -26,7 +28,7 @@
         android:padding="50dp"
         android:textSize="50dp"
         android:text="Epicture"
-        android:gravity="center"/>
+        android:gravity="center"/> -->
 
     <ImageView
         android:id="@+id/logo"

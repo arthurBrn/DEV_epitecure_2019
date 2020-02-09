@@ -7,14 +7,6 @@ public class UserFactory {
     private String userAvatar;
     private String userReputation;
 
-    /*public UserFactory(String urlUser, String bio, String avatar, int reputation)
-    {
-        this.userUrl = urlUser;
-        this.userBio = bio;
-        this.userAvatar = avatar;
-        this.userReputation = reputation;
-    }*/
-
     public String getUserUrl() {
         return userUrl;
     }
