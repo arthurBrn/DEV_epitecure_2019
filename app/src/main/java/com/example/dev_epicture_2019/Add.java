@@ -68,8 +68,8 @@ public class Add extends Common {
         Common.changeActivity(navigationBar, 2, getApplicationContext());
         overridePendingTransition(0, 0);
 
-        IDProf = (ImageView) findViewById(R.id.IdProf);
-        btnUpload = (Button) findViewById(R.id.uploadBtn);
+        IDProf = findViewById(R.id.IdProf);
+        btnUpload = findViewById(R.id.uploadBtn);
         userAccessToken = getAccesToken();
         descriptionUploadFile = findViewById(R.id.upload_file_description);
         uploadProgress = findViewById(R.id.uploadProgressBar);
@@ -107,14 +107,14 @@ public class Add extends Common {
     }
 
 
-    public String cursorOnString(Context context, Intent contentUri)
+    public String getImageFullPath(Context context, Uri contentUri)
     {
         String str = "";
         Cursor cursor = null;
 
         try {
             String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri.getData(),  proj, null, null, null);
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             str = cursor.getString(column_index);
@@ -129,17 +129,21 @@ public class Add extends Common {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            String cleanedPath = cursorOnString(getApplicationContext(), data);
-            Log.d("TAG IMAGE", "FILEPATH " + cleanedPath);
-            sourceFile = new File(cleanedPath);
             changeUploadLayout();
-            if (requestCode == REQUEST_PICTURE_CAMERA)
-                displayThumbnailFromCamera(data);
-            if (requestCode == REQUEST_PICTURE_GALLERY)
-                displayThumbnailFromGallery(data);
+            String cleanedPath = "";
+            if (requestCode == REQUEST_PICTURE_CAMERA) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                IDProf.setImageBitmap(imageBitmap);
+                cleanedPath = getImageFullPath(getApplicationContext(), getImageUri(imageBitmap));
+            }
+            if (requestCode == REQUEST_PICTURE_GALLERY) {
+                IDProf.setImageURI(data.getData());
+                cleanedPath = getImageFullPath(getApplicationContext(), data.getData());
+            }
 
-            //mbitmap = turnImageRecoveredIntoBitmap(data, mbitmap);
-            //pictureTurnedIn64Format = turnBitMapObjectIntoBase64String(mbitmap);
+
+            sourceFile = new File(cleanedPath);
 
             descriptionUploadFile.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -165,6 +169,14 @@ public class Add extends Common {
         }
     }
 
+    public Uri getImageUri(Bitmap imageBitmap)
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String thePath = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), imageBitmap, "some title", "some description");
+        return (Uri.parse(thePath));
+    }
+
 
     public void startAsyncTask()
     {
@@ -182,11 +194,13 @@ public class Add extends Common {
 
         @Override
         protected String doInBackground(File... files) {
+            if (someText.isEmpty())
+                someText=" ";
             Log.d("SOURCEFILE","SOURCEFILE " + sourceFile);
             OkHttpClient cli = new OkHttpClient.Builder().build();
             RequestBody body = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("image", "Some description", RequestBody.create(sourceFile, MEDIA_TYPE_JPG))
+                    .addFormDataPart("image", someText, RequestBody.create(sourceFile, MEDIA_TYPE_JPG))
                     .build();
             Request req = new Request.Builder()
                     .url("https://api.imgur.com/3/upload")
@@ -227,6 +241,10 @@ public class Add extends Common {
             Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
             uploadProgress.setProgress(0);
             uploadProgress.setVisibility(View.INVISIBLE);
+            btnUpload.setText("Browse");
+            descriptionUploadFile.setText("");
+            IDProf.setBackgroundColor(getResources().getColor(R.color.white));
+            IDProf.setImageURI(null);
         }
     }
 
@@ -236,23 +254,6 @@ public class Add extends Common {
     public void changeUploadLayout() {
         btnUpload.setText("Upload");
         IDProf.setBackgroundColor(getResources().getColor(R.color.white));
-    }
-
-    /**
-     * @param data
-     */
-    public void displayThumbnailFromCamera(Intent data) {
-        Bundle extras = data.getExtras();
-        Bitmap imageBitmap = (Bitmap) extras.get("data");
-        IDProf.setImageBitmap(imageBitmap);
-    }
-
-    /**
-     * @param data
-     */
-    public void displayThumbnailFromGallery(Intent data) {
-        imageUri = data.getData();
-        IDProf.setImageURI(imageUri);
     }
 
     /**

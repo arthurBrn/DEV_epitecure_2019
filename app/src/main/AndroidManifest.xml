@@ -22,15 +22,12 @@
             android:name=".recoverData"
             android:screenOrientation="portrait"
             android:noHistory="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            >
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <data
                     android:host="epicture.com"
                     android:scheme="epicture" />
-
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

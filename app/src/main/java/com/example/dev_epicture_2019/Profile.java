@@ -36,20 +36,20 @@ import org.json.JSONObject;
 
 public class Profile extends Common {
 
-    final String accountRequestUrl = "https://api.imgur.com/3/account/me";
-    String urlRecoverMeImages = "https://api.imgur.com/3/account/me/images";
+    String USER_INFO_REQUEST = "https://api.imgur.com/3/account/me";
+    String USER_IMAGES_REQUEST = "https://api.imgur.com/3/account/me/images";
+    String USER_TOKEN;
     OkHttpClient httpClient;
-    String token;
     ImageView useravatar;
     TextView username;
     TextView userbio;
     TextView userrep;
     UserFactory usr;
+    PictureFactory pic;
     RecyclerView profilRv;
-    //RvAdapter rvAdapter;
-    //RecyclerView.Adapter<ProfilView> rvProfilAdapter;
 
 
+    // Inner class serving of ViewHolder
     public class ProfilView extends RecyclerView.ViewHolder {
         ImageView picture;
 
@@ -58,6 +58,8 @@ public class Profile extends Common {
             picture = findViewById(R.id.profil_images_id);
         }
     }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,28 +68,32 @@ public class Profile extends Common {
         Common.changeActivity(navigationBar, 3, getApplicationContext());
         overridePendingTransition(0, 0);
 
+        USER_TOKEN = getAccesToken();
         useravatar = findViewById(R.id.idUserImage);
         username = findViewById(R.id.idUserName);
         userbio = findViewById(R.id.idUserBio);
-        userrep = findViewById(R.id.idUserReputation);
-        token = getAccesToken();
         username = findViewById(R.id.idUserName);
         profilRv = findViewById(R.id.profilRecyclerView);
-        //rvAdapter = new RvAdapter();
 
-        fetchProfilData();
+        fetchUserDataForProfilHeader();
         fetchUserImages();
     }
 
-    public void fetchProfilData() {
-        httpClient = new OkHttpClient.Builder().build();
+    public Request buildGetRequest(String userInfo)
+    {
         Request request = new Request.Builder()
-                .url("https://api.imgur.com/3/account/me")
+                .url(userInfo)
                 .method("GET", null)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + USER_TOKEN)
                 .header("User-agent", "DEV_epicture_2019")
                 .build();
-        // enqueue run the request in a background thread
+        return (request);
+    }
+
+    public void fetchUserDataForProfilHeader()
+    {
+        httpClient = new OkHttpClient.Builder().build();
+        Request request = buildGetRequest(USER_INFO_REQUEST);
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -99,18 +105,15 @@ public class Profile extends Common {
                 try {
                     JSONObject data = new JSONObject(response.body().string());
                     JSONObject sndobj = data.getJSONObject("data");
-                    String st = sndobj.getString("url");
                     usr = UserFactory.createUser(sndobj.getString("url"), sndobj.getString("bio"), sndobj.getString("avatar"), sndobj.getString("reputation"));
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             username.setText(usr.getUserUrl());
-                            if (usr.getUserBio() != null)
-                                userbio.setText(usr.getUserBio());
+                            if (usr.getUserBio().isEmpty())
+                                userbio.setVisibility(View.INVISIBLE);
                             else
-                                userbio.setText(" ");
-                            userrep.setText(usr.getUserReputation());
+                                userbio.setText(usr.getUserBio());
                             Picasso.get().load(usr.getUserAvatar()).centerCrop().resize(300, 300).into(useravatar);
                         }
                     });
@@ -123,13 +126,8 @@ public class Profile extends Common {
 
     public void fetchUserImages() {
         httpClient = new OkHttpClient.Builder().build();
-        Request req = new Request.Builder()
-                .url("https://api.imgur.com/3/account/me/images")
-                .method("GET", null)
-                .header("Authorization", "Bearer " + getAccesToken())
-                .header("User-agent", "DEV_epicture_2019")
-                .build();
-        httpClient.newCall(req).enqueue(new Callback() {
+        Request request = buildGetRequest(USER_IMAGES_REQUEST);
+        httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.getStackTrace();
@@ -145,16 +143,12 @@ public class Profile extends Common {
                 try {
                     fullObject = new JSONObject(response.body().string());
                     arrayOfObject = fullObject.getJSONArray("data");
-
-                    Log.d("TAG", "ARRAY LENGTH : " + arrayOfObject.length());
                     for (int j = 0; j < arrayOfObject.length(); j++) {
-                        Log.d("FIRSTLIGNFOR", "WERE IN THE FOR ");
                         Photo photoObject = new Photo();
+                        //pic = PictureFactory.createUser(oneImageObject.getString("id"), oneImageObject.getString("title"), oneImageObject.getString("description"), oneImageObject.getString("favorite"));
                         oneImageObject = arrayOfObject.getJSONObject(j);
                         photoObject.id = oneImageObject.getString("id");
                         mPictures.add(photoObject);
-                        Log.d("TAG", "MyImagesProfile: " + photoObject.id);
-                        Log.d("mPictures", "mpitcures size : " + mPictures.size());
                     }
                     runOnUiThread(() -> renderGridLayout(mPictures, profilRv));
                 } catch (JSONException e) {
@@ -164,7 +158,7 @@ public class Profile extends Common {
         });
     }
 
-    public void renderGridLayout(final List<Photo> pics, RecyclerView profilRv)
+    private void renderGridLayout(final List<Photo> pics, RecyclerView profilRv)
     {
         Log.d("mPictures", "mpitcures size : " + pics.size());
         profilRv.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
@@ -173,6 +167,7 @@ public class Profile extends Common {
             @NonNull
             @Override
             public ProfilView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                Log.d("mPictures", "mpitcures size : " + pics.size());
                 ProfilView pv = new ProfilView(getLayoutInflater().inflate(R.layout.profil_card, null));
                 pv.picture = pv.itemView.findViewById(R.id.profil_images_id);
                 return (pv);
