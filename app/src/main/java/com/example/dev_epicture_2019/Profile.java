@@ -135,13 +135,13 @@ public class Profile extends Common {
     }
 
 
-    public void initialize()
+    /* public void initialize()
     {
         profilRV = findViewById(R.id.rvProfil);
         // Initialize a gridLayoutManager
         GridLayoutManager glm = new GridLayoutManager(this, 2);
         profilRV.setLayoutManager(glm);
-    }
+    } */
 
     public void setProfilHeader(UserFactory usr) {
         this.runOnUiThread(new Runnable() {

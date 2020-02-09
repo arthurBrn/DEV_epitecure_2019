@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 import okhttp3.Call;
