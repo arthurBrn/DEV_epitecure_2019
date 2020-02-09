@@ -48,7 +48,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".Search"
             android:screenOrientation="portrait"/>
-        <activity android:name=".Home"/>
+        <activity android:name=".Home"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Common"
             android:screenOrientation="portrait"/>
         <activity android:name=".Details"

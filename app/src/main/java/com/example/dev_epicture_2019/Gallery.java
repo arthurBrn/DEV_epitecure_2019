@@ -1,10 +1,12 @@
 package com.example.dev_epicture_2019;
 
-public class Photo {
+public class Gallery {
     String id;
     String title;
     String description;
-    String link;
-    Boolean favorite;
-    String type;
+    int ups;
+    int downs;
+    int images_count;
+    int datetime;
 }
+
